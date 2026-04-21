@@ -1,8 +1,5 @@
 import { notFound } from "next/navigation";
-import Container from "@mui/material/Container";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
-import MarkdownContent from "@/components/MarkdownContent";
+import StoryDetail from "@/components/StoryDetail";
 import { getStoryBySlug } from "@/lib/stories";
 
 export const dynamic = "force-dynamic";
@@ -21,23 +18,21 @@ export async function generateMetadata({ params }) {
 
 export default async function StoryPage({ params }) {
   const { slug } = await params;
-  const story = await getStoryBySlug(slug);
-  if (!story) {
+  const raw = await getStoryBySlug(slug);
+  if (!raw) {
     notFound();
   }
-  return (
-    <Container maxWidth="md" sx={{ py: { xs: 4, md: 6 } }}>
-      <Stack spacing={2}>
-        <Typography variant="h3" component="h1">
-          {story.title}
-        </Typography>
-        {story.excerpt ? (
-          <Typography variant="subtitle1" color="text.secondary">
-            {story.excerpt}
-          </Typography>
-        ) : null}
-        <MarkdownContent markdown={story.body} />
-      </Stack>
-    </Container>
-  );
+  const story = {
+    _id: String(raw._id),
+    slug: raw.slug,
+    title: raw.title,
+    excerpt: raw.excerpt || "",
+    body: raw.body || "",
+    author: raw.author || "",
+    coverImage: raw.coverImage || "",
+    coverImageCredit: raw.coverImageCredit || "",
+    coverImageCreditUrl: raw.coverImageCreditUrl || "",
+    updatedAt: raw.updatedAt ? new Date(raw.updatedAt).toISOString() : null,
+  };
+  return <StoryDetail story={story} />;
 }
