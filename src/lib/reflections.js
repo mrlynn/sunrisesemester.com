@@ -30,6 +30,46 @@ export async function getTodaysReflection() {
   return getReflection(now.getMonth() + 1, now.getDate());
 }
 
+export async function listReflectionsByMonth(month) {
+  if (!process.env.MONGODB_URI) {
+    return [];
+  }
+  const conn = await connectDB();
+  const client = conn.connection.getClient();
+  const coll = client.db(REFLECTIONS_DB).collection(REFLECTIONS_COLLECTION);
+  const docs = await coll
+    .find(
+      { month: Number(month) },
+      { projection: { month: 1, day: 1, title: 1, reference: 1 } },
+    )
+    .sort({ day: 1 })
+    .toArray();
+  return docs.map((d) => ({
+    month: d.month,
+    day: d.day,
+    title: d.title || "",
+    reference: d.reference || "",
+  }));
+}
+
+export async function listReflectionSummaries() {
+  if (!process.env.MONGODB_URI) {
+    return [];
+  }
+  const conn = await connectDB();
+  const client = conn.connection.getClient();
+  const coll = client.db(REFLECTIONS_DB).collection(REFLECTIONS_COLLECTION);
+  const docs = await coll
+    .find({}, { projection: { month: 1, day: 1, title: 1 } })
+    .sort({ month: 1, day: 1 })
+    .toArray();
+  return docs.map((d) => ({
+    month: d.month,
+    day: d.day,
+    title: d.title || "",
+  }));
+}
+
 const MONTH_NAMES = [
   "January",
   "February",

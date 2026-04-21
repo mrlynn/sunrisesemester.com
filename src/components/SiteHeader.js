@@ -17,8 +17,11 @@ import Divider from "@mui/material/Divider";
 
 const links = [
   { href: "/", label: "Home" },
+  { href: "/newcomer", label: "Newcomer" },
   { href: "/meetings", label: "Meetings" },
+  { href: "/reflections", label: "Reflections" },
   { href: "/stories", label: "Stories" },
+  // { href: "/our-group", label: "Our Group" },
   { href: "/resources", label: "Resources" },
 ];
 
