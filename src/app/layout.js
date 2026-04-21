@@ -16,6 +16,23 @@ export const metadata = {
   },
   description:
     "Meeting information, stories, and resources for the Sunrise Semester home group of Alcoholics Anonymous.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "https://sunrisesemester.com"
+  ),
+  openGraph: {
+    type: "website",
+    siteName: "Sunrise Semester",
+    title: "Sunrise Semester — AA Home Group",
+    description:
+      "Meeting information, stories, and resources for the Sunrise Semester home group of Alcoholics Anonymous.",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sunrise Semester — AA Home Group",
+    description:
+      "Meeting information, stories, and resources for the Sunrise Semester home group of Alcoholics Anonymous.",
+  },
 };
 
 export default function RootLayout({ children }) {
