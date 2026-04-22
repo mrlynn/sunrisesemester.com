@@ -13,6 +13,7 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import CheckIcon from "@mui/icons-material/Check";
+import ArticleIcon from "@mui/icons-material/Article";
 
 const ZOOM_ID = "917964988";
 const ZOOM_URL = `https://zoom.us/j/${ZOOM_ID}`;
@@ -28,6 +29,13 @@ const meetings = [
     gradient: "linear-gradient(135deg, #ff6b35 0%, #ffa751 60%, #ffd89b 100%)",
     accent: "#ff6b35",
     days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+    formats: [
+      { label: "Mon", url: "https://drive.google.com/file/d/1UZ_xSVDqSIQ3mWrug9KSZogURJJ_250x/view?usp=drive_link" },
+      { label: "Tue", url: "https://drive.google.com/file/d/1mlSNb3fLyoWek9emoushf3Lmy1tH3C_h/view?usp=drive_link" },
+      { label: "Wed", url: "https://drive.google.com/file/d/15N-YdxwgeexTyZZbapZHdLaOG98QGb60/view?usp=drive_link" },
+      { label: "Thu", url: "https://drive.google.com/file/d/1GUy_uNLrzMv9O4quAfAQzc5ktD8cK2kl/view?usp=drive_link" },
+      { label: "Fri", url: "https://drive.google.com/file/d/1JlBJV8x2rDGA7eYnJwPI_BVZYNvd0eFL/view?usp=drive_link" },
+    ],
   },
   {
     id: "saturday-men",
@@ -39,6 +47,9 @@ const meetings = [
     gradient: "linear-gradient(135deg, #5b2c6f 0%, #c43c68 60%, #ff6b35 100%)",
     accent: "#c43c68",
     days: ["Sat"],
+    formats: [
+      { label: "View Format", url: "https://drive.google.com/file/d/1VbKkUJUL0yGkBlHsPULRulqh_GV1SWyd/view?usp=drive_link" },
+    ],
   },
   {
     id: "saturday-women",
@@ -61,6 +72,9 @@ const meetings = [
     gradient: "linear-gradient(135deg, #c43c68 0%, #ff6b35 50%, #ffa751 100%)",
     accent: "#ff8555",
     days: ["Sun"],
+    formats: [
+      { label: "View Format", url: "https://drive.google.com/file/d/1pMAsv2nX17U_fvyrXWX1Tgz4gBBgVGFS/view?usp=drive_link" },
+    ],
   },
 ];
 
@@ -354,6 +368,8 @@ function ZoomCard({ onCopy, copied }) {
 }
 
 function MeetingCard({ meeting, index }) {
+  const isWeekday = meeting.id === "weekdays";
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -400,69 +416,231 @@ function MeetingCard({ meeting, index }) {
             filter: "blur(30px)",
           }}
         />
-        <Stack spacing={2.5} sx={{ position: "relative" }}>
-          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
-            {meeting.days.map((d) => (
-              <Chip
-                key={d}
-                label={d}
-                size="small"
-                sx={{
-                  fontWeight: 700,
-                  fontSize: "0.75rem",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  background: meeting.gradient,
-                  color: "#ffffff",
-                  border: "none",
-                }}
-              />
-            ))}
-          </Stack>
-          <Box>
-            <Typography
-              sx={{
-                fontSize: "0.8rem",
-                fontWeight: 700,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: meeting.accent,
-                mb: 0.5,
-              }}
-            >
-              {meeting.label}
-            </Typography>
-            <Typography
-              component="h3"
-              sx={{
-                fontSize: { xs: "1.75rem", md: "2rem" },
-                fontWeight: 800,
-                lineHeight: 1.1,
-                color: "#1d1d1d",
-                fontFamily: 'var(--font-serif), Georgia, serif',
-                mb: 1.5,
-              }}
-            >
-              {meeting.title}
-            </Typography>
-            <Stack direction="row" spacing={1} sx={{ mb: 1.5, alignItems: "center" }}>
-              <ScheduleIcon sx={{ fontSize: 20, color: meeting.accent }} />
+
+        {/* Weekday card: side-by-side info + format links */}
+        {isWeekday ? (
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={{ xs: 3, md: 0 }}
+            sx={{ position: "relative" }}
+          >
+            {/* Left: meeting info */}
+            <Box sx={{ flex: 1, pr: { md: 4 } }}>
+              <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", mb: 2 }}>
+                {meeting.days.map((d) => (
+                  <Chip
+                    key={d}
+                    label={d}
+                    size="small"
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      background: meeting.gradient,
+                      color: "#ffffff",
+                      border: "none",
+                    }}
+                  />
+                ))}
+              </Stack>
               <Typography
                 sx={{
-                  fontSize: "1.1rem",
+                  fontSize: "0.8rem",
                   fontWeight: 700,
-                  color: "#2c2c2c",
-                  letterSpacing: "0.02em",
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: meeting.accent,
+                  mb: 0.5,
                 }}
               >
-                {meeting.time}
+                {meeting.label}
               </Typography>
+              <Typography
+                component="h3"
+                sx={{
+                  fontSize: { xs: "1.75rem", md: "2rem" },
+                  fontWeight: 800,
+                  lineHeight: 1.1,
+                  color: "#1d1d1d",
+                  fontFamily: 'var(--font-serif), Georgia, serif',
+                  mb: 1.5,
+                }}
+              >
+                {meeting.title}
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ mb: 1.5, alignItems: "center" }}>
+                <ScheduleIcon sx={{ fontSize: 20, color: meeting.accent }} />
+                <Typography sx={{ fontSize: "1.1rem", fontWeight: 700, color: "#2c2c2c", letterSpacing: "0.02em" }}>
+                  {meeting.time}
+                </Typography>
+              </Stack>
+              <Typography sx={{ color: "#555555", lineHeight: 1.6, fontSize: "0.95rem" }}>
+                {meeting.blurb}
+              </Typography>
+            </Box>
+
+            {/* Right: format links panel */}
+            <Box
+              sx={{
+                flexShrink: 0,
+                width: { xs: "100%", md: 260 },
+                borderLeft: { md: `2px solid` },
+                borderColor: { md: "rgba(255,107,53,0.15)" },
+                borderTop: { xs: `2px solid`, md: "none" },
+                borderTopColor: { xs: "rgba(255,107,53,0.15)" },
+                pl: { md: 4 },
+                pt: { xs: 3, md: 0 },
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: 1,
+              }}
+            >
+              <Stack direction="row" spacing={1} sx={{ mb: 1.5, alignItems: "center" }}>
+                <ArticleIcon sx={{ fontSize: 18, color: meeting.accent }} />
+                <Typography
+                  sx={{
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.2em",
+                    textTransform: "uppercase",
+                    color: meeting.accent,
+                  }}
+                >
+                  Meeting Formats
+                </Typography>
+              </Stack>
+              {meeting.formats.map((f) => (
+                <Button
+                  key={f.label}
+                  href={f.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="contained"
+                  fullWidth
+                  startIcon={<ArticleIcon />}
+                  sx={{
+                    textTransform: "none",
+                    fontWeight: 700,
+                    fontSize: "0.9rem",
+                    justifyContent: "flex-start",
+                    borderRadius: 2,
+                    py: 1,
+                    px: 2,
+                    background: "rgba(255,107,53,0.07)",
+                    color: "#1d1d1d",
+                    boxShadow: "none",
+                    "&:hover": {
+                      background: meeting.gradient,
+                      color: "#ffffff",
+                      boxShadow: "0 4px 16px rgba(255,107,53,0.3)",
+                    },
+                  }}
+                >
+                  {f.label} Format
+                </Button>
+              ))}
+            </Box>
+          </Stack>
+        ) : (
+          /* All other cards: original layout */
+          <Stack spacing={2.5} sx={{ position: "relative" }}>
+            <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+              {meeting.days.map((d) => (
+                <Chip
+                  key={d}
+                  label={d}
+                  size="small"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    background: meeting.gradient,
+                    color: "#ffffff",
+                    border: "none",
+                  }}
+                />
+              ))}
             </Stack>
-            <Typography sx={{ color: "#555555", lineHeight: 1.6, fontSize: "0.95rem" }}>
-              {meeting.blurb}
-            </Typography>
-          </Box>
-        </Stack>
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: meeting.accent,
+                  mb: 0.5,
+                }}
+              >
+                {meeting.label}
+              </Typography>
+              <Typography
+                component="h3"
+                sx={{
+                  fontSize: { xs: "1.75rem", md: "2rem" },
+                  fontWeight: 800,
+                  lineHeight: 1.1,
+                  color: "#1d1d1d",
+                  fontFamily: 'var(--font-serif), Georgia, serif',
+                  mb: 1.5,
+                }}
+              >
+                {meeting.title}
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ mb: 1.5, alignItems: "center" }}>
+                <ScheduleIcon sx={{ fontSize: 20, color: meeting.accent }} />
+                <Typography
+                  sx={{
+                    fontSize: "1.1rem",
+                    fontWeight: 700,
+                    color: "#2c2c2c",
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  {meeting.time}
+                </Typography>
+              </Stack>
+              <Typography sx={{ color: "#555555", lineHeight: 1.6, fontSize: "0.95rem" }}>
+                {meeting.blurb}
+              </Typography>
+              {meeting.formats && (
+                <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", pt: 1.5 }}>
+                  {meeting.formats.map((f) => (
+                    <Button
+                      key={f.label}
+                      href={f.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      size="small"
+                      startIcon={<ArticleIcon />}
+                      sx={{
+                        textTransform: "none",
+                        fontWeight: 600,
+                        fontSize: "0.85rem",
+                        color: meeting.accent,
+                        border: "1.5px solid",
+                        borderColor: meeting.accent,
+                        borderRadius: 6,
+                        px: 2,
+                        py: 0.75,
+                        "&:hover": {
+                          background: meeting.accent,
+                          color: "#ffffff",
+                          borderColor: meeting.accent,
+                        },
+                      }}
+                    >
+                      {f.label}
+                    </Button>
+                  ))}
+                </Stack>
+              )}
+            </Box>
+          </Stack>
+        )}
       </Box>
     </motion.div>
   );
@@ -517,7 +695,12 @@ export default function MeetingsSchedule() {
               }}
             >
               {meetings.map((m, i) => (
-                <MeetingCard key={m.id} meeting={m} index={i} />
+                <Box
+                  key={m.id}
+                  sx={m.id === "weekdays" ? { gridColumn: { md: "1 / -1" } } : {}}
+                >
+                  <MeetingCard meeting={m} index={i} />
+                </Box>
               ))}
             </Box>
           </Box>

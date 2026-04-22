@@ -14,17 +14,21 @@ export async function getLanding() {
   if (!process.env.MONGODB_URI) {
     return FALLBACK;
   }
-  await connectDB();
-  let doc = await Landing.findOne({ key: "main" }).lean();
-  if (!doc) {
-    doc = (
-      await Landing.create({
-        key: "main",
-        heroTitle: FALLBACK.heroTitle,
-        heroSubtitle: FALLBACK.heroSubtitle,
-        body: "",
-      })
-    ).toObject();
+  try {
+    await connectDB();
+    let doc = await Landing.findOne({ key: "main" }).lean();
+    if (!doc) {
+      doc = (
+        await Landing.create({
+          key: "main",
+          heroTitle: FALLBACK.heroTitle,
+          heroSubtitle: FALLBACK.heroSubtitle,
+          body: "",
+        })
+      ).toObject();
+    }
+    return doc;
+  } catch {
+    return FALLBACK;
   }
-  return doc;
 }

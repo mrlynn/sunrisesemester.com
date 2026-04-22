@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:drive.google.com)",
+      "Bash(node -e \"require\\('./src/components/MeetingsSchedule.js'\\)\")",
+      "Bash(npx eslint *)",
+      "Bash(npx next *)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "claude-flow"
+  ]
+}

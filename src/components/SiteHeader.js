@@ -21,6 +21,7 @@ const links = [
   { href: "/meetings", label: "Meetings" },
   { href: "/reflections", label: "Reflections" },
   { href: "/stories", label: "Stories" },
+  { href: "/literature", label: "Literature" },
   // { href: "/our-group", label: "Our Group" },
   { href: "/resources", label: "Resources" },
 ];
