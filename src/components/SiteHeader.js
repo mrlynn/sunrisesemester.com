@@ -23,6 +23,7 @@ const links = [
   { href: "/stories", label: "Stories" },
   { href: "/literature", label: "Literature" },
   // { href: "/our-group", label: "Our Group" },
+  { href: "/events", label: "Events" },
   { href: "/resources", label: "Resources" },
 ];
 

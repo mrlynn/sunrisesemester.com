@@ -45,6 +45,9 @@ export default function AdminToolbar() {
           <Button component={Link} href="/admin/anniversaries" color="inherit" size="small">
             Anniversaries
           </Button>
+          <Button component={Link} href="/admin/events" color="inherit" size="small">
+            Events
+          </Button>
           <Button component={Link} href="/admin/service-roles" color="inherit" size="small">
             Service
           </Button>
