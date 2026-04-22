@@ -28,7 +28,7 @@ export default async function HomePage() {
       {reflection ? <DailyReflection reflection={reflection} /> : null}
 
       {upcomingEvents.length > 0 ? (
-        <Container maxWidth="md" sx={{ pt: { xs: 6, md: 8 } }}>
+        <Container maxWidth="md" sx={{ py: { xs: 6, md: 8 } }}>
           <Card sx={{ boxShadow: "0 2px 8px rgba(0,0,0,0.08)", borderRadius: 2, borderLeft: "4px solid #ff6b35" }}>
             <CardContent sx={{ p: { xs: 3, md: 4 } }}>
               <Typography variant="h6" fontWeight={700} gutterBottom>
