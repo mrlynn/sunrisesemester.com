@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { motion } from "motion/react";
+import Link from "next/link";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
@@ -13,6 +14,11 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import LinkIcon from "@mui/icons-material/Link";
 
 const resources = [
+  {
+    label: "Sherpa Guide: Zoom Administration",
+    url: "/sherpa-guide",
+    internal: true,
+  },
   {
     label: "Alcoholics Anonymous World Services",
     url: "https://www.aa.org/",
@@ -159,6 +165,7 @@ function TraditionCard() {
 }
 
 function ResourceLink({ item, index }) {
+  const isInternal = Boolean(item.internal);
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -167,10 +174,10 @@ function ResourceLink({ item, index }) {
       transition={{ duration: 0.5, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
     >
       <Box
-        component="a"
+        component={isInternal ? Link : "a"}
         href={item.url}
-        target="_blank"
-        rel="noopener noreferrer"
+        target={isInternal ? undefined : "_blank"}
+        rel={isInternal ? undefined : "noopener noreferrer"}
         sx={{
           display: "flex",
           alignItems: "center",
@@ -195,7 +202,7 @@ function ResourceLink({ item, index }) {
           <LinkIcon className="link-icon" sx={{ fontSize: 20, color: "#aaaaaa", transition: "color 0.25s ease" }} />
           <Typography sx={{ fontWeight: 600, fontSize: "0.95rem" }}>{item.label}</Typography>
         </Stack>
-        <OpenInNewIcon sx={{ fontSize: 16, color: "#cccccc", flexShrink: 0 }} />
+        {isInternal ? null : <OpenInNewIcon sx={{ fontSize: 16, color: "#cccccc", flexShrink: 0 }} />}
       </Box>
     </motion.div>
   );

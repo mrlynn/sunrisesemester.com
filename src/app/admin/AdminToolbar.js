@@ -35,7 +35,7 @@ export default function AdminToolbar() {
         <Typography variant="subtitle1" sx={{ fontWeight: 700, flexGrow: 1 }}>
           Editor
         </Typography>
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
           <Button component={Link} href="/admin/landing" color="inherit" size="small">
             Landing
           </Button>
@@ -47,6 +47,12 @@ export default function AdminToolbar() {
           </Button>
           <Button component={Link} href="/admin/events" color="inherit" size="small">
             Events
+          </Button>
+          <Button component={Link} href="/admin/puzzles" color="inherit" size="small">
+            Puzzles
+          </Button>
+          <Button component={Link} href="/admin/crossword-bank" color="inherit" size="small">
+            Crossword bank
           </Button>
           <Button component={Link} href="/admin/service-roles" color="inherit" size="small">
             Service

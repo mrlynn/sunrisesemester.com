@@ -43,7 +43,7 @@ export async function PUT(request) {
         },
         $setOnInsert: { key: "main" },
       },
-      { new: true, upsert: true, setDefaultsOnInsert: true },
+      { returnDocument: "after", upsert: true, setDefaultsOnInsert: true },
     ).lean();
     return NextResponse.json(doc);
   } catch (e) {

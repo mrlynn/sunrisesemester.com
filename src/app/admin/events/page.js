@@ -46,7 +46,7 @@ export default async function AdminEventsPage() {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Stack spacing={3}>
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems={{ sm: "center" }}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ alignItems: { sm: "center" } }}>
           <Typography variant="h4" component="h1" sx={{ flexGrow: 1 }}>
             Events
           </Typography>
