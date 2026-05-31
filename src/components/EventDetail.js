@@ -8,6 +8,7 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MarkdownContent from "@/components/MarkdownContent";
 import RsvpDialog, { rsvpButtonSx } from "@/components/RsvpDialog";
@@ -153,51 +154,105 @@ export default function EventDetail({ event, initialAttendees = [], initialCoord
     }
   }, [event._id]);
 
+  const showJoinPanel = showRsvp || showWhosComing || event.coordinationEnabled;
+
   return (
     <Box>
       <DetailHeader event={event} />
       <Container maxWidth="md" sx={{ py: { xs: 5, md: 8 } }}>
-        <Stack spacing={4}>
-          <Stack direction="row" spacing={2} sx={{ alignItems: "center", flexWrap: "wrap", rowGap: 1.5 }}>
-            {showRsvp ? (
-              <Button onClick={() => setRsvpOpen(true)} disabled={isFull} sx={rsvpButtonSx}>
-                {isFull ? "Event full" : "RSVP to this event"}
-              </Button>
-            ) : null}
-            {showRsvp && spotsRemaining !== null ? (
-              <Typography sx={{ fontSize: "0.9rem", color: "#888", fontWeight: 600 }}>
-                {isFull
-                  ? "No spots remaining"
-                  : `${spotsRemaining} spot${spotsRemaining === 1 ? "" : "s"} remaining`}
-              </Typography>
-            ) : null}
-            {event.hasFlyer ? (
-              <Button
-                component="a"
-                href={`/api/events/${event._id}/flyer?download=1`}
-                variant="outlined"
-                sx={{
-                  borderColor: "#ffa751",
-                  color: "#c43c68",
-                  fontWeight: 700,
-                  "&:hover": { borderColor: "#ff6b35", background: "rgba(255,107,53,0.05)" },
-                }}
-              >
-                Download flyer
-              </Button>
-            ) : null}
-          </Stack>
-
+        <Stack spacing={5}>
           {event.body ? (
             <MarkdownContent markdown={event.body} />
           ) : (
             <Typography color="text.secondary">More details coming soon.</Typography>
           )}
 
-          {showWhosComing ? <WhosComing attendees={attendees} /> : null}
+          {showJoinPanel ? (
+            <Box
+              sx={{
+                p: { xs: 3, md: 4 },
+                borderRadius: 4,
+                background:
+                  "linear-gradient(135deg, rgba(255,107,53,0.06) 0%, rgba(255,215,125,0.12) 100%)",
+                border: "1px solid #ffe3c4",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "var(--font-serif), Georgia, serif",
+                  fontSize: { xs: "1.75rem", md: "2.25rem" },
+                  fontWeight: 800,
+                  color: "#1d1d1d",
+                  mb: 0.5,
+                }}
+              >
+                Join us
+              </Typography>
+              <Typography sx={{ color: "#666", fontSize: "0.95rem", mb: 3 }}>
+                RSVP, then tap what you&rsquo;ll bring or if you need a ride.
+              </Typography>
 
-          {event.coordinationEnabled ? (
-            <CoordinationBoard event={event} initial={initialCoordination} />
+              {(showRsvp || event.hasFlyer) ? (
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={1.5}
+                  sx={{ alignItems: { sm: "center" }, mb: 3 }}
+                >
+                  {showRsvp ? (
+                    <Button onClick={() => setRsvpOpen(true)} disabled={isFull} sx={rsvpButtonSx}>
+                      {isFull ? "Event full" : "RSVP"}
+                    </Button>
+                  ) : null}
+                  {showRsvp && spotsRemaining !== null ? (
+                    <Typography sx={{ fontSize: "0.9rem", color: "#666", fontWeight: 600 }}>
+                      {isFull
+                        ? "No spots remaining"
+                        : `${spotsRemaining} spot${spotsRemaining === 1 ? "" : "s"} left`}
+                    </Typography>
+                  ) : null}
+                  {event.hasFlyer ? (
+                    <Button
+                      component="a"
+                      href={`/api/events/${event._id}/flyer?download=1`}
+                      variant="outlined"
+                      sx={{
+                        borderColor: "#ffa751",
+                        color: "#c43c68",
+                        fontWeight: 700,
+                        "&:hover": { borderColor: "#ff6b35", background: "rgba(255,107,53,0.05)" },
+                      }}
+                    >
+                      Download flyer
+                    </Button>
+                  ) : null}
+                </Stack>
+              ) : null}
+
+              {showWhosComing ? (
+                <>
+                  <WhosComing attendees={attendees} embedded />
+                  {event.coordinationEnabled ? <Divider sx={{ my: 3 }} /> : null}
+                </>
+              ) : null}
+
+              {event.coordinationEnabled ? (
+                <CoordinationBoard event={event} initial={initialCoordination} embedded />
+              ) : null}
+            </Box>
+          ) : event.hasFlyer ? (
+            <Button
+              component="a"
+              href={`/api/events/${event._id}/flyer?download=1`}
+              variant="outlined"
+              sx={{
+                alignSelf: "flex-start",
+                borderColor: "#ffa751",
+                color: "#c43c68",
+                fontWeight: 700,
+              }}
+            >
+              Download flyer
+            </Button>
           ) : null}
         </Stack>
       </Container>

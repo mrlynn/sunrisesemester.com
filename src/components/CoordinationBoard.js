@@ -1,19 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "motion/react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
-import LinearProgress from "@mui/material/LinearProgress";
+import Divider from "@mui/material/Divider";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Alert from "@mui/material/Alert";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { BRING_CATEGORIES, CATEGORY_META } from "@/lib/coordination";
@@ -47,12 +46,12 @@ function NameFields({ firstName, lastInitial, setFirstName, setLastInitial }) {
 }
 
 function BringDialog({ eventId, slot, onClose, onSuccess }) {
+  const isCustom = !slot;
   const [firstName, setFirstName] = React.useState("");
   const [lastInitial, setLastInitial] = React.useState("");
-  const [category, setCategory] = React.useState(slot?.category || "food");
-  const [item, setItem] = React.useState(slot ? slot.label : "");
-  const [quantity, setQuantity] = React.useState(1);
-  const [note, setNote] = React.useState("");
+  const [category, setCategory] = React.useState("food");
+  const [item, setItem] = React.useState("");
+  const [detail, setDetail] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState("");
 
@@ -67,12 +66,12 @@ function BringDialog({ eventId, slot, onClose, onSuccess }) {
         body: JSON.stringify({
           kind: "contribution",
           slot: slot?.id || null,
-          category,
-          item,
-          quantity,
+          category: slot?.category || category,
+          item: isCustom ? item.trim() : detail.trim() || slot.label,
+          quantity: 1,
           firstName,
           lastInitial,
-          note,
+          note: "",
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -88,59 +87,63 @@ function BringDialog({ eventId, slot, onClose, onSuccess }) {
   return (
     <Dialog open onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle sx={{ fontWeight: 800, fontFamily: "var(--font-serif), Georgia, serif" }}>
-        {slot ? `Bring: ${slot.label}` : "Add what you're bringing"}
+        {isCustom ? "I'll bring something" : `I'll bring ${slot.label}`}
       </DialogTitle>
       <Box component="form" onSubmit={handleSubmit}>
         <DialogContent>
           <Stack spacing={2.5} sx={{ pt: 1 }}>
+            {isCustom ? (
+              <TextField
+                label="What are you bringing?"
+                value={item}
+                onChange={(e) => setItem(e.target.value)}
+                required
+                fullWidth
+                autoFocus
+                placeholder="e.g. Potato salad, ice, folding chairs"
+                slotProps={{ htmlInput: { maxLength: 120 } }}
+              />
+            ) : null}
             <NameFields
               firstName={firstName}
               lastInitial={lastInitial}
               setFirstName={setFirstName}
               setLastInitial={setLastInitial}
             />
-            {!slot ? (
+            {isCustom ? (
+              <Box>
+                <Typography sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#666", mb: 1 }}>
+                  Type
+                </Typography>
+                <ToggleButtonGroup
+                  exclusive
+                  value={category}
+                  onChange={(_e, val) => val && setCategory(val)}
+                  fullWidth
+                  size="small"
+                >
+                  {BRING_CATEGORIES.map((c) => (
+                    <ToggleButton
+                      key={c}
+                      value={c}
+                      aria-label={CATEGORY_META[c].label}
+                      sx={{ flex: 1, fontSize: "0.75rem", py: 1 }}
+                    >
+                      {CATEGORY_META[c].emoji}
+                    </ToggleButton>
+                  ))}
+                </ToggleButtonGroup>
+              </Box>
+            ) : (
               <TextField
-                select
-                label="Category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                label="Details (optional)"
+                value={detail}
+                onChange={(e) => setDetail(e.target.value)}
                 fullWidth
-              >
-                {BRING_CATEGORIES.map((c) => (
-                  <MenuItem key={c} value={c}>
-                    {CATEGORY_META[c].emoji} {CATEGORY_META[c].label}
-                  </MenuItem>
-                ))}
-              </TextField>
-            ) : null}
-            <TextField
-              label={slot ? "What exactly? (optional)" : "What are you bringing?"}
-              value={item}
-              onChange={(e) => setItem(e.target.value)}
-              fullWidth
-              required={!slot}
-              placeholder={slot ? slot.label : "e.g. Potato salad"}
-              slotProps={{ htmlInput: { maxLength: 120 } }}
-            />
-            <TextField
-              label="How many / how much"
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              fullWidth
-              slotProps={{ htmlInput: { min: 1, max: 50 } }}
-              helperText="e.g. 2 dozen, 1 tray — round to a number"
-            />
-            <TextField
-              label="Note (optional)"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              fullWidth
-              multiline
-              minRows={2}
-              slotProps={{ htmlInput: { maxLength: 300 } }}
-            />
+                placeholder={`e.g. specific type of ${slot.label.toLowerCase()}`}
+                slotProps={{ htmlInput: { maxLength: 120 } }}
+              />
+            )}
             {error ? <Alert severity="error">{error}</Alert> : null}
           </Stack>
         </DialogContent>
@@ -149,7 +152,7 @@ function BringDialog({ eventId, slot, onClose, onSuccess }) {
             Cancel
           </Button>
           <Button type="submit" disabled={submitting} sx={rsvpButtonSx}>
-            {submitting ? "Saving…" : "I'll bring it"}
+            {submitting ? "Saving…" : "Done"}
           </Button>
         </DialogActions>
       </Box>
@@ -280,6 +283,13 @@ const panelSx = {
   border: "1px solid #ffe3c4",
 };
 
+const embeddedTitleSx = {
+  fontSize: "1.1rem",
+  fontWeight: 800,
+  color: "#1d1d1d",
+  letterSpacing: "0.02em",
+};
+
 const sectionTitleSx = {
   fontFamily: "var(--font-serif), Georgia, serif",
   fontSize: { xs: "1.5rem", md: "1.85rem" },
@@ -287,134 +297,176 @@ const sectionTitleSx = {
   color: "#1d1d1d",
 };
 
-function PersonChip({ children }) {
-  return (
-    <Box
-      sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 0.75,
-        px: 1.25,
-        py: 0.5,
-        borderRadius: 999,
-        background: "#fff",
-        border: "1px solid #ffd9b8",
-        fontSize: "0.85rem",
-        fontWeight: 600,
-        color: "#444",
-      }}
-    >
-      {children}
-    </Box>
-  );
-}
+const listSx = {
+  borderRadius: 2,
+  background: "#fff",
+  border: "1px solid #e8e8e8",
+  overflow: "hidden",
+};
 
-function SlotRow({ slot, claims, onClaim, disabled }) {
+const rowSx = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 2,
+  px: 2,
+  py: 1.5,
+  borderBottom: "1px solid #f0f0f0",
+  "&:last-child": { borderBottom: "none" },
+};
+
+function slotRemaining(slot, claims) {
   const claimed = claims.reduce((sum, c) => sum + (c.quantity || 1), 0);
-  const pct = slot.quantity > 0 ? Math.min((claimed / slot.quantity) * 100, 100) : 0;
-  const filled = claimed >= slot.quantity;
+  return Math.max((slot.quantity || 1) - claimed, 0);
+}
+
+function takenLabel(contribution, slotLabel) {
+  const name = nameLabel(contribution);
+  const item = slotLabel || contribution.item || "Something";
+  const extra =
+    contribution.item && slotLabel && contribution.item !== slotLabel
+      ? ` (${contribution.item})`
+      : "";
+  const note = contribution.note ? ` — ${contribution.note}` : "";
+  return `${item}${extra} · ${name}${note}`;
+}
+
+function buildPotluckRows(bringSlots, contributions) {
+  const open = [];
+  const taken = [];
+
+  for (const slot of bringSlots) {
+    const claims = contributions.filter((c) => c.slot === slot.id);
+    const remaining = slotRemaining(slot, claims);
+    if (remaining > 0) {
+      open.push({
+        key: `open-${slot.id}`,
+        label: slot.label,
+        hint:
+          remaining > 1 ? `${remaining} spots open` : "Open",
+        slot,
+      });
+    }
+    for (const c of claims) {
+      taken.push({
+        key: c.id,
+        label: takenLabel(c, slot.label),
+      });
+    }
+  }
+
+  for (const c of contributions.filter((x) => !x.slot)) {
+    taken.push({
+      key: c.id,
+      label: takenLabel(c, null),
+    });
+  }
+
+  return { open, taken };
+}
+
+function PotluckList({ bringSlots, contributions, onPickSlot, disabled }) {
+  const { open, taken } = buildPotluckRows(bringSlots, contributions);
+
+  if (open.length === 0 && taken.length === 0) {
+    return (
+      <Typography sx={{ color: "#777", fontSize: "0.95rem" }}>
+        {disabled ? "Nothing signed up yet." : "Nothing on the list yet."}
+      </Typography>
+    );
+  }
+
   return (
-    <Box
-      sx={{
-        p: 2,
-        borderRadius: 3,
-        background: "rgba(255,255,255,0.65)",
-        border: "1px solid #ffe3c4",
-      }}
-    >
-      <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", mb: 1 }}>
-        <Typography sx={{ fontWeight: 700, color: "#1d1d1d", flexGrow: 1 }}>
-          {slot.label}
-        </Typography>
-        <Chip
-          size="small"
-          label={`${claimed} / ${slot.quantity}`}
-          sx={{
-            fontWeight: 700,
-            color: filled ? "#fff" : "#c43c68",
-            background: filled ? "#2e9e6b" : "rgba(196,60,104,0.1)",
-          }}
-        />
-        {!disabled ? (
-          <Button size="small" onClick={() => onClaim(slot)} sx={{ fontWeight: 700, color: "#c43c68" }}>
-            {filled ? "Add more" : "I'll bring this"}
-          </Button>
-        ) : null}
-      </Stack>
-      <LinearProgress
-        variant="determinate"
-        value={pct}
-        sx={{
-          height: 6,
-          borderRadius: 3,
-          mb: claims.length ? 1.5 : 0,
-          backgroundColor: "rgba(0,0,0,0.06)",
-          "& .MuiLinearProgress-bar": {
-            background: "linear-gradient(90deg, #ff6b35, #c43c68)",
-          },
-        }}
-      />
-      {claims.length ? (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-          {claims.map((c) => (
-            <PersonChip key={c.id}>
-              {nameLabel(c)}
-              {c.item && c.item !== slot.label ? ` · ${c.item}` : ""}
-              {c.quantity > 1 ? ` ×${c.quantity}` : ""}
-            </PersonChip>
-          ))}
+    <Box sx={listSx}>
+      {open.map((row) => (
+        <Box key={row.key} sx={rowSx}>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography sx={{ fontWeight: 700, color: "#1d1d1d" }}>{row.label}</Typography>
+            <Typography sx={{ fontSize: "0.85rem", color: "#c43c68" }}>{row.hint}</Typography>
+          </Box>
+          {!disabled ? (
+            <Button
+              size="small"
+              variant="contained"
+              onClick={() => onPickSlot(row.slot)}
+              sx={{ ...rsvpButtonSx, flexShrink: 0, px: 2, py: 0.75, fontSize: "0.8rem" }}
+            >
+              I&rsquo;ll bring this
+            </Button>
+          ) : null}
         </Box>
-      ) : null}
+      ))}
+      {taken.map((row) => (
+        <Box key={row.key} sx={rowSx}>
+          <Typography sx={{ fontSize: "0.95rem", color: "#2e9e6b", fontWeight: 600 }}>
+            ✓ {row.label}
+          </Typography>
+        </Box>
+      ))}
     </Box>
   );
 }
 
-function RideColumn({ title, accent, rides, onAdd, addLabel, disabled, emptyText }) {
+function RideBlock({ title, rides, actionLabel, onAction, disabled, emptyText }) {
   return (
-    <Box
-      sx={{
-        flex: 1,
-        minWidth: 0,
-        p: 2.5,
-        borderRadius: 3,
-        background: "rgba(255,255,255,0.65)",
-        border: "1px solid #ffe3c4",
-      }}
-    >
-      <Stack direction="row" sx={{ alignItems: "center", mb: 1.5 }} spacing={1}>
-        <Typography sx={{ fontWeight: 800, color: accent, flexGrow: 1 }}>{title}</Typography>
-        {!disabled ? (
-          <Button size="small" onClick={onAdd} sx={{ fontWeight: 700, color: "#c43c68" }}>
-            {addLabel}
-          </Button>
-        ) : null}
-      </Stack>
+    <Box sx={{ ...listSx, flex: 1, minWidth: 0 }}>
+      <Box sx={{ ...rowSx, background: "#fafafa", borderBottom: "1px solid #eee" }}>
+        <Typography sx={{ fontWeight: 800, color: "#1d1d1d" }}>{title}</Typography>
+        <Typography sx={{ fontSize: "0.85rem", color: "#888", fontWeight: 600 }}>
+          {rides.length} {rides.length === 1 ? "person" : "people"}
+        </Typography>
+      </Box>
       {rides.length === 0 ? (
-        <Typography sx={{ color: "#888", fontSize: "0.9rem" }}>{emptyText}</Typography>
+        <Box sx={{ px: 2, py: 2 }}>
+          <Typography sx={{ color: "#888", fontSize: "0.9rem", mb: disabled ? 0 : 1.5 }}>
+            {emptyText}
+          </Typography>
+          {!disabled ? (
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={onAction}
+              sx={{ fontWeight: 700, color: "#c43c68", borderColor: "#ffd9b8" }}
+            >
+              {actionLabel}
+            </Button>
+          ) : null}
+        </Box>
       ) : (
-        <Stack spacing={1.25}>
+        <>
           {rides.map((r) => (
-            <Box key={r.id} sx={{ borderBottom: "1px solid #ffe3c4", pb: 1.25 }}>
-              <Typography sx={{ fontWeight: 700, color: "#1d1d1d" }}>
-                {nameLabel(r)}
-                <Box component="span" sx={{ color: "#c43c68", fontWeight: 700 }}>
-                  {" "}
-                  · {r.seats} seat{r.seats === 1 ? "" : "s"}
-                </Box>
-              </Typography>
-              <Typography sx={{ fontSize: "0.85rem", color: "#666" }}>
-                {[r.area, r.time].filter(Boolean).join(" · ")}
-                {r.note ? `${r.area || r.time ? " — " : ""}${r.note}` : ""}
-              </Typography>
+            <Box key={r.id} sx={rowSx}>
+              <Box>
+                <Typography sx={{ fontWeight: 700 }}>{nameLabel(r)}</Typography>
+                <Typography sx={{ fontSize: "0.85rem", color: "#666" }}>
+                  {r.seats} seat{r.seats === 1 ? "" : "s"}
+                  {[r.area, r.time].filter(Boolean).length
+                    ? ` · ${[r.area, r.time].filter(Boolean).join(" · ")}`
+                    : ""}
+                  {r.note ? ` — ${r.note}` : ""}
+                </Typography>
+              </Box>
             </Box>
           ))}
-        </Stack>
+          {!disabled ? (
+            <Box sx={{ px: 2, py: 1.5, borderTop: "1px solid #f0f0f0" }}>
+              <Button
+                fullWidth
+                size="small"
+                onClick={onAction}
+                sx={{ fontWeight: 700, color: "#c43c68" }}
+              >
+                {actionLabel}
+              </Button>
+            </Box>
+          ) : null}
+        </>
       )}
     </Box>
   );
 }
 
-export default function CoordinationBoard({ event, initial }) {
+export default function CoordinationBoard({ event, initial, embedded = false }) {
   const [data, setData] = React.useState(
     initial || { bringSlots: [], contributions: [], rides: { offers: [], requests: [] } },
   );
@@ -438,114 +490,62 @@ export default function CoordinationBoard({ event, initial }) {
   }, [event._id]);
 
   const { bringSlots, contributions, rides } = data;
-  const extrasByCategory = (cat) =>
-    contributions.filter((c) => !c.slot && c.category === cat);
-  const claimsForSlot = (slotId) => contributions.filter((c) => c.slot === slotId);
 
-  const activeCategories = BRING_CATEGORIES.filter(
-    (cat) =>
-      bringSlots.some((s) => s.category === cat) || extrasByCategory(cat).length > 0,
-  );
-  const hasAnyBring = bringSlots.length > 0 || contributions.length > 0;
+  const titleSx = embedded ? embeddedTitleSx : sectionTitleSx;
+  const outerSx = embedded ? {} : { ...panelSx };
 
   return (
-    <Box sx={panelSx}>
-      <Stack
-        direction="row"
-        spacing={1.5}
-        sx={{ alignItems: "baseline", flexWrap: "wrap", rowGap: 1, mb: 2.5 }}
-      >
-        <Typography sx={sectionTitleSx}>Bring something</Typography>
-        {!isPast ? (
-          <Button onClick={() => setBringDialog({ slot: null })} sx={{ fontWeight: 700, color: "#c43c68" }}>
-            + Add what you&rsquo;re bringing
-          </Button>
-        ) : null}
+    <Box sx={outerSx}>
+      <Typography sx={{ ...titleSx, mb: 0.5 }}>What to bring</Typography>
+      <Typography sx={{ color: "#666", fontSize: "0.9rem", mb: 2 }}>
+        Tap <strong>I&rsquo;ll bring this</strong> on anything that&rsquo;s still open.
+      </Typography>
+
+      <PotluckList
+        bringSlots={bringSlots}
+        contributions={contributions}
+        onPickSlot={(slot) => setBringDialog({ slot })}
+        disabled={isPast}
+      />
+
+      {!isPast ? (
+        <Button
+          fullWidth
+          variant="text"
+          onClick={() => setBringDialog({ slot: null })}
+          sx={{ mt: 1.5, fontWeight: 700, color: "#c43c68" }}
+        >
+          + Something not on the list
+        </Button>
+      ) : null}
+
+      <Divider sx={{ my: 3 }} />
+
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mb: 0.5 }}>
+        <DirectionsCarIcon sx={{ color: "#c43c68", fontSize: "1.25rem" }} />
+        <Typography sx={titleSx}>Carpool</Typography>
       </Stack>
-
-      {!hasAnyBring ? (
-        <Typography sx={{ color: "#777", mb: 1 }}>
-          Nothing on the list yet
-          {isPast ? "." : " — be the first to add what you'll bring."}
-        </Typography>
-      ) : (
-        <Stack spacing={3}>
-          {activeCategories.map((cat) => {
-            const slots = bringSlots.filter((s) => s.category === cat);
-            const extras = extrasByCategory(cat);
-            return (
-              <Box key={cat}>
-                <Typography
-                  sx={{
-                    fontWeight: 800,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    fontSize: "0.8rem",
-                    color: "#a85",
-                    mb: 1.25,
-                  }}
-                >
-                  {CATEGORY_META[cat].emoji} {CATEGORY_META[cat].label}
-                </Typography>
-                <Stack spacing={1.5}>
-                  {slots.map((slot) => (
-                    <SlotRow
-                      key={slot.id}
-                      slot={slot}
-                      claims={claimsForSlot(slot.id)}
-                      onClaim={(s) => setBringDialog({ slot: s })}
-                      disabled={isPast}
-                    />
-                  ))}
-                  {extras.length ? (
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                      {extras.map((c) => (
-                        <PersonChip key={c.id}>
-                          {c.item || "Something"}
-                          {c.quantity > 1 ? ` ×${c.quantity}` : ""} · {nameLabel(c)}
-                        </PersonChip>
-                      ))}
-                    </Box>
-                  ) : null}
-                </Stack>
-              </Box>
-            );
-          })}
-        </Stack>
-      )}
-
-      <Box sx={{ mt: 4 }}>
-        <Stack direction="row" spacing={1.25} sx={{ alignItems: "center", mb: 2.5 }}>
-          <DirectionsCarIcon sx={{ color: "#c43c68" }} />
-          <Typography sx={sectionTitleSx}>Rides</Typography>
-        </Stack>
-        <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
-          <RideColumn
-            title="Can offer a ride"
-            accent="#2e9e6b"
-            rides={rides.offers}
-            onAdd={() => setRideDialog("offer")}
-            addLabel="+ Offer"
-            disabled={isPast}
-            emptyText="No drivers yet — offer a ride if you have room."
-          />
-          <RideColumn
-            title="Need a ride"
-            accent="#c43c68"
-            rides={rides.requests}
-            onAdd={() => setRideDialog("request")}
-            addLabel="+ Request"
-            disabled={isPast}
-            emptyText="No one needs a ride yet."
-          />
-        </Stack>
-        {!isPast && (rides.offers.length > 0 || rides.requests.length > 0) ? (
-          <Typography sx={{ mt: 1.5, fontSize: "0.82rem", color: "#999" }}>
-            Contact details stay private with the organizer, who&rsquo;ll connect drivers and
-            riders.
-          </Typography>
-        ) : null}
-      </Box>
+      <Typography sx={{ color: "#666", fontSize: "0.9rem", mb: 2 }}>
+        Need a ride or have extra seats? Sign up — the organizer will connect you privately.
+      </Typography>
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+        <RideBlock
+          title="Drivers"
+          rides={rides.offers}
+          actionLabel="Offer a ride"
+          onAction={() => setRideDialog("offer")}
+          disabled={isPast}
+          emptyText="No drivers signed up yet."
+        />
+        <RideBlock
+          title="Need a ride"
+          rides={rides.requests}
+          actionLabel="Request a ride"
+          onAction={() => setRideDialog("request")}
+          disabled={isPast}
+          emptyText="No ride requests yet."
+        />
+      </Stack>
 
       {bringDialog ? (
         <BringDialog

@@ -99,36 +99,45 @@ function Avatar({ attendee, index }) {
   );
 }
 
-export default function WhosComing({ attendees = [] }) {
+export default function WhosComing({ attendees = [], embedded = false }) {
   const count = attendees.length;
   const headcount = attendees.reduce((sum, a) => sum + (a.partySize || 1), 0);
   const extraGuests = headcount - count;
 
+  const titleSx = embedded
+    ? {
+        fontSize: "1.1rem",
+        fontWeight: 800,
+        color: "#1d1d1d",
+        letterSpacing: "0.02em",
+      }
+    : {
+        fontFamily: "var(--font-serif), Georgia, serif",
+        fontSize: { xs: "1.5rem", md: "1.85rem" },
+        fontWeight: 800,
+        color: "#1d1d1d",
+      };
+
   return (
     <Box
-      sx={{
-        p: { xs: 3, md: 4 },
-        borderRadius: 4,
-        background:
-          "linear-gradient(135deg, rgba(255,107,53,0.06) 0%, rgba(255,215,125,0.12) 100%)",
-        border: "1px solid #ffe3c4",
-      }}
+      sx={
+        embedded
+          ? {}
+          : {
+              p: { xs: 3, md: 4 },
+              borderRadius: 4,
+              background:
+                "linear-gradient(135deg, rgba(255,107,53,0.06) 0%, rgba(255,215,125,0.12) 100%)",
+              border: "1px solid #ffe3c4",
+            }
+      }
     >
       <Stack
         direction="row"
         spacing={1.5}
         sx={{ alignItems: "baseline", flexWrap: "wrap", mb: count ? 3 : 1 }}
       >
-        <Typography
-          sx={{
-            fontFamily: "var(--font-serif), Georgia, serif",
-            fontSize: { xs: "1.5rem", md: "1.85rem" },
-            fontWeight: 800,
-            color: "#1d1d1d",
-          }}
-        >
-          Who&rsquo;s coming
-        </Typography>
+        <Typography sx={titleSx}>Who&rsquo;s coming</Typography>
         {count ? (
           <Typography sx={{ fontWeight: 700, color: "#c43c68" }}>
             {headcount} {headcount === 1 ? "person" : "people"}
