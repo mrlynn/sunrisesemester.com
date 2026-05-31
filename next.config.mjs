@@ -8,6 +8,13 @@ const nextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async redirects() {
+    const partyEvent = "/events/anniversary-2026";
+    return [
+      { source: "/party", destination: partyEvent, permanent: true },
+      { source: "/picnic", destination: partyEvent, permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
