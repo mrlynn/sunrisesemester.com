@@ -110,7 +110,7 @@ function Section({ section, index }) {
           background: "#ffffff",
         }}
       >
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+        <Stack direction="row" spacing={2} sx={{ alignItems: "center", mb: 3 }}>
           <Box
             sx={{
               width: 48,

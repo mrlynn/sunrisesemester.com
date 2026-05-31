@@ -12,6 +12,7 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import connectDB from "@/lib/mongodb";
 import Event from "@/models/Event";
+import Rsvp from "@/models/Rsvp";
 import { COOKIE_NAME, verifyAdminToken } from "@/lib/auth";
 
 export const metadata = { title: "Events (editor)" };
@@ -43,6 +44,10 @@ export default async function AdminEventsPage() {
   }
   await connectDB();
   const events = await Event.find({}).sort({ eventDate: 1 }).lean();
+  const rsvpAgg = await Rsvp.aggregate([
+    { $group: { _id: "$event", total: { $sum: "$partySize" } } },
+  ]);
+  const rsvpCounts = new Map(rsvpAgg.map((row) => [String(row._id), row.total]));
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Stack spacing={3}>
@@ -77,6 +82,14 @@ export default async function AdminEventsPage() {
                   }
                   secondary={formatDate(ev.eventDate)}
                 />
+                {ev.rsvpEnabled ? (
+                  <Chip
+                    size="small"
+                    variant="outlined"
+                    label={`${rsvpCounts.get(String(ev._id)) ?? 0} RSVP`}
+                    sx={{ ml: 1 }}
+                  />
+                ) : null}
                 <Chip
                   size="small"
                   label={ev.published ? "Published" : "Draft"}

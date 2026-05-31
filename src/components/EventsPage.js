@@ -7,7 +7,10 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
+import Button from "@mui/material/Button";
+import Link from "next/link";
 import MarkdownContent from "@/components/MarkdownContent";
+import RsvpDialog, { rsvpButtonSx } from "@/components/RsvpDialog";
 
 function HeaderBanner() {
   const { scrollY } = useScroll();
@@ -154,6 +157,12 @@ function HeaderBanner() {
 }
 
 function EventCard({ ev, index, past }) {
+  const [rsvpOpen, setRsvpOpen] = React.useState(false);
+  const spotsRemaining =
+    ev.rsvpCapacity > 0 ? Math.max(ev.rsvpCapacity - (ev.rsvpCount || 0), 0) : null;
+  const isFull = spotsRemaining === 0;
+  const showRsvp = !past && ev.rsvpEnabled;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -239,14 +248,18 @@ function EventCard({ ev, index, past }) {
           </Box>
 
           <Typography
-            component="h2"
+            component={Link}
+            href={`/events/${ev.slug || ev._id}`}
             sx={{
+              display: "block",
               fontSize: { xs: "1.6rem", md: "2rem" },
               fontWeight: 800,
               lineHeight: 1.1,
               color: "#1d1d1d",
+              textDecoration: "none",
               fontFamily: "var(--font-serif), Georgia, serif",
               mb: ev.body ? 2 : 0,
+              "&:hover": { color: "#c43c68" },
             }}
           >
             {ev.title}
@@ -257,8 +270,57 @@ function EventCard({ ev, index, past }) {
               <MarkdownContent markdown={ev.body} />
             </Box>
           ) : null}
+
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{ mt: 3, alignItems: "center", flexWrap: "wrap", rowGap: 1 }}
+          >
+            {showRsvp ? (
+              <Button onClick={() => setRsvpOpen(true)} disabled={isFull} sx={rsvpButtonSx}>
+                {isFull ? "Event full" : "RSVP"}
+              </Button>
+            ) : null}
+            {ev.hasFlyer ? (
+              <Button
+                component="a"
+                href={`/api/events/${ev._id}/flyer?download=1`}
+                variant="outlined"
+                sx={{
+                  borderColor: "#ffa751",
+                  color: "#c43c68",
+                  fontWeight: 700,
+                  "&:hover": { borderColor: "#ff6b35", background: "rgba(255,107,53,0.05)" },
+                }}
+              >
+                Download flyer
+              </Button>
+            ) : null}
+            <Button
+              component={Link}
+              href={`/events/${ev.slug || ev._id}`}
+              sx={{ color: "#c43c68", fontWeight: 700 }}
+            >
+              View details →
+            </Button>
+            {showRsvp && spotsRemaining !== null ? (
+              <Typography sx={{ fontSize: "0.85rem", color: "#888", fontWeight: 600 }}>
+                {isFull
+                  ? "No spots remaining"
+                  : `${spotsRemaining} spot${spotsRemaining === 1 ? "" : "s"} remaining`}
+              </Typography>
+            ) : null}
+            {ev.rsvpEnabled && ev.rsvpCount > 0 ? (
+              <Typography sx={{ fontSize: "0.85rem", color: "#c43c68", fontWeight: 700 }}>
+                {`\u{1F44B} ${ev.rsvpCount} coming`}
+              </Typography>
+            ) : null}
+          </Stack>
         </Box>
       </Box>
+      {showRsvp && rsvpOpen ? (
+        <RsvpDialog onClose={() => setRsvpOpen(false)} event={ev} />
+      ) : null}
     </motion.div>
   );
 }
