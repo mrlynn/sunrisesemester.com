@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
-    "seed:crossword-bank": "node --env-file=.env.local scripts/seed-crossword-bank.mjs"
+    "seed:crossword-bank": "node --env-file=.env.local scripts/seed-crossword-bank.mjs",
+    "seed:editor-user": "node --env-file=.env.local scripts/seed-editor-user.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

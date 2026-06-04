@@ -1,15 +1,14 @@
 ## Active context
 
 ### Current focus
-- Implement weekly crossword puzzle feature with persisted progress and a leaderboard.
+- Monthly AA business meeting minutes — secretary editor and public archive.
 
 ### Key decisions
-- Use a privacy-first identity: anonymous `userId` cookie + optional display name.
-- Persist puzzles and runs in MongoDB Atlas via Mongoose.
-- Use existing admin auth patterns for puzzle publishing.
+- Flexible schema: reorderable agenda sections, optional motions, attached reports, commitment schedules with dynamic columns.
+- Secretary uses existing `/admin` auth (toolbar link: Minutes).
+- Public list at `/business-meetings`, detail at `/business-meetings/[slug]` (default slug `YYYY-MM`).
 
 ### Next steps
-- Add `Puzzle` / `PuzzleRun` / `PuzzleUser` models.
-- Add `/api/puzzles/*` endpoints.
-- Build `/puzzles` pages and a minimal `/admin/puzzles` publishing UI.
+- Optionally seed December 2022 sample minutes from legacy document.
+- Consider member-only visibility if the group wants minutes off the public nav.
 

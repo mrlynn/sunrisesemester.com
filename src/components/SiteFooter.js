@@ -95,6 +95,23 @@ export default function SiteFooter() {
                     Member Stories
                   </Typography>
                 </NextLink>
+                <NextLink href="/business-meetings" style={{ textDecoration: "none" }}>
+                  <Typography
+                    component="span"
+                    sx={{
+                      color: "#ff6b35",
+                      fontWeight: 600,
+                      transition: "all 0.2s ease",
+                      display: "inline-block",
+                      fontSize: "0.95rem",
+                      "&:hover": {
+                        color: "#ff5a1f",
+                      },
+                    }}
+                  >
+                    Group service &amp; minutes
+                  </Typography>
+                </NextLink>
                 <NextLink href="/resources" style={{ textDecoration: "none" }}>
                   <Typography
                     component="span"

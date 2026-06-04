@@ -37,7 +37,7 @@ export const sunriseTheme = createTheme({
     divider: "#e5e5e5",
   },
   typography: {
-    fontFamily: '"Inter", "Segoe UI", "Roboto", sans-serif',
+    fontFamily: 'var(--font-sans), "Segoe UI", "Roboto", sans-serif',
     h1: {
       fontFamily: 'var(--font-serif), Georgia, serif',
       fontWeight: 700,

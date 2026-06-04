@@ -9,11 +9,13 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
+import { defaultAdminPath } from "@/lib/roles";
 
 export default function AdminLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/admin/landing";
+  const next = searchParams.get("next");
+  const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState("");
   const [busy, setBusy] = React.useState(false);
@@ -26,14 +28,21 @@ export default function AdminLoginForm() {
       const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data.error || "Could not sign in.");
         return;
       }
-      router.push(next.startsWith("/") ? next : "/admin/landing");
+      const role = data.role || "admin";
+      const fallback = defaultAdminPath(role);
+      const target =
+        next && next.startsWith("/admin") ? next : fallback;
+      router.push(target);
       router.refresh();
     } finally {
       setBusy(false);
@@ -49,10 +58,19 @@ export default function AdminLoginForm() {
               Editor sign-in
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Use the group editor password from the server configuration. This area is
+              Sign in with the email and password your administrator set for you. This area is
               not shown in the main navigation.
             </Typography>
             {error ? <Alert severity="error">{error}</Alert> : null}
+            <TextField
+              label="Email"
+              type="email"
+              name="email"
+              autoComplete="username"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              fullWidth
+            />
             <TextField
               label="Password"
               type="password"

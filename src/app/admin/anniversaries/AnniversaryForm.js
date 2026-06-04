@@ -112,7 +112,7 @@ export default function AnniversaryForm({ initial, mode }) {
         onChange={(e) => setSobrietyDate(e.target.value)}
         fullWidth
         required
-        InputLabelProps={{ shrink: true }}
+        slotProps={{ inputLabel: { shrink: true } }}
       />
       <TextField
         label="Note (optional)"

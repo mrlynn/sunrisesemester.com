@@ -1,6 +1,12 @@
-import { Source_Serif_4 } from "next/font/google";
+import { Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import AppProviders from "@/components/AppProviders";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
@@ -37,7 +43,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={sourceSerif.variable}>
+    <html lang="en" className={`${inter.variable} ${sourceSerif.variable}`}>
       <body>
         <AppProviders>{children}</AppProviders>
       </body>

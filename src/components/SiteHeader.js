@@ -24,6 +24,7 @@ const links = [
   { href: "/literature", label: "Literature" },
   // { href: "/our-group", label: "Our Group" },
   { href: "/events", label: "Events" },
+  { href: "/business-meetings", label: "Group service" },
   { href: "/resources", label: "Resources" },
 ];
 

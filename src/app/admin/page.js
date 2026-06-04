@@ -1,7 +1,7 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { COOKIE_NAME, verifyAdminToken } from "@/lib/auth";
+import { getAuthSession } from "@/lib/requireAdmin";
+import { defaultAdminPath } from "@/lib/roles";
 import AdminLoginForm from "./AdminLoginForm";
 
 export const metadata = {
@@ -9,10 +9,9 @@ export const metadata = {
 };
 
 export default async function AdminLoginPage() {
-  const store = await cookies();
-  const token = store.get(COOKIE_NAME)?.value;
-  if (await verifyAdminToken(token)) {
-    redirect("/admin/landing");
+  const session = await getAuthSession();
+  if (session) {
+    redirect(defaultAdminPath(session.role));
   }
   return (
     <Suspense fallback={null}>

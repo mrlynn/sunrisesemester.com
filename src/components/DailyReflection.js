@@ -230,19 +230,21 @@ export default function DailyReflection({ reflection, variant = "section" }) {
             </Box>
           </Box>
 
-          <Typography
-            sx={{
-              textAlign: "center",
-              fontSize: { xs: "0.82rem", md: "0.9rem" },
-              fontWeight: 700,
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              color: "#8a3a52",
-              mb: { xs: 5, md: 7 },
-            }}
-          >
-            {reflection.reference}
-          </Typography>
+          {reflection.reference ? (
+            <Typography
+              sx={{
+                textAlign: "center",
+                fontSize: { xs: "0.82rem", md: "0.9rem" },
+                fontWeight: 700,
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: "#8a3a52",
+                mb: { xs: 5, md: 7 },
+              }}
+            >
+              {reflection.reference}
+            </Typography>
+          ) : null}
         </motion.div>
 
         {reflection.comment ? (

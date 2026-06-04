@@ -15,8 +15,9 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
-const ZOOM_ID = "917964988";
-const ZOOM_URL = `https://zoom.us/j/${ZOOM_ID}`;
+const ZOOM_ID = "901964988";
+const ZOOM_URL =
+  "https://us02web.zoom.us/j/901964988?pwd=QkhEY1FFOUF2b1AzMmRwZ0VtejdVQT09";
 
 const SELF_TEST = [
   "Have you ever decided to stop drinking for a week or so, but only lasted for a couple of days?",

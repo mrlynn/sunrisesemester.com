@@ -1,10 +1,12 @@
 import Box from "@mui/material/Box";
 import AdminToolbar from "./AdminToolbar";
+import { getAuthSession } from "@/lib/requireAdmin";
 
-export default function AdminLayout({ children }) {
+export default async function AdminLayout({ children }) {
+  const session = await getAuthSession();
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
-      <AdminToolbar />
+      <AdminToolbar session={session} />
       {children}
     </Box>
   );

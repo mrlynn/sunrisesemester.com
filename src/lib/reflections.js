@@ -1,7 +1,34 @@
 import connectDB from "@/lib/mongodb";
 
 const REFLECTIONS_DB = "dailyreflections";
-const REFLECTIONS_COLLECTION = "reflections";
+const REFLECTIONS_COLLECTION = "dailyThoughts";
+
+const CALENDAR_MONTH_FILTER = { month: { $gte: 1, $lte: 12 } };
+
+function reflectionsCollection(client) {
+  return client.db(REFLECTIONS_DB).collection(REFLECTIONS_COLLECTION);
+}
+
+function dayFilter(month, day) {
+  return {
+    month: Number(month),
+    day: Number(day),
+    active: { $ne: false },
+  };
+}
+
+/** Maps dailyThoughts (and legacy reflections) docs to the UI shape. */
+export function normalizeReflectionDoc(doc) {
+  if (!doc) return null;
+  return {
+    month: doc.month,
+    day: doc.day,
+    title: doc.title || "",
+    quote: doc.quote || doc.thought || "",
+    reference: doc.reference || "",
+    comment: doc.comment || doc.challenge || "",
+  };
+}
 
 export async function getReflection(month, day) {
   if (!process.env.MONGODB_URI) {
@@ -9,20 +36,9 @@ export async function getReflection(month, day) {
   }
   const conn = await connectDB();
   const client = conn.connection.getClient();
-  const coll = client.db(REFLECTIONS_DB).collection(REFLECTIONS_COLLECTION);
-  const doc = await coll.findOne(
-    { month: Number(month), day: Number(day) },
-    {
-      projection: {
-        embedding: 0,
-        cleanedAt: 0,
-        commentCleaned: 0,
-        fixedAt: 0,
-        fixedFromCorrupt: 0,
-      },
-    },
-  );
-  return doc;
+  const coll = reflectionsCollection(client);
+  const doc = await coll.findOne(dayFilter(month, day));
+  return normalizeReflectionDoc(doc);
 }
 
 export async function getTodaysReflection() {
@@ -36,11 +52,11 @@ export async function listReflectionsByMonth(month) {
   }
   const conn = await connectDB();
   const client = conn.connection.getClient();
-  const coll = client.db(REFLECTIONS_DB).collection(REFLECTIONS_COLLECTION);
+  const coll = reflectionsCollection(client);
   const docs = await coll
     .find(
-      { month: Number(month) },
-      { projection: { month: 1, day: 1, title: 1, reference: 1 } },
+      { month: Number(month), active: { $ne: false } },
+      { projection: { month: 1, day: 1, title: 1, reference: 1, thought: 1 } },
     )
     .sort({ day: 1 })
     .toArray();
@@ -58,9 +74,12 @@ export async function listReflectionSummaries() {
   }
   const conn = await connectDB();
   const client = conn.connection.getClient();
-  const coll = client.db(REFLECTIONS_DB).collection(REFLECTIONS_COLLECTION);
+  const coll = reflectionsCollection(client);
   const docs = await coll
-    .find({}, { projection: { month: 1, day: 1, title: 1 } })
+    .find(
+      { active: { $ne: false }, ...CALENDAR_MONTH_FILTER },
+      { projection: { month: 1, day: 1, title: 1 } },
+    )
     .sort({ month: 1, day: 1 })
     .toArray();
   return docs.map((d) => ({
@@ -109,16 +128,16 @@ function isToday(month, day, now = new Date()) {
 }
 
 export function serializeReflection(doc, now = new Date()) {
-  if (!doc) return null;
-  const month = doc.month;
-  const day = doc.day;
+  const normalized = normalizeReflectionDoc(doc);
+  if (!normalized) return null;
+  const { month, day } = normalized;
   const prev = previousDay(month, day);
   const next = nextDay(month, day);
   return {
-    title: doc.title || "",
-    quote: doc.quote || "",
-    reference: doc.reference || "",
-    comment: doc.comment || "",
+    title: normalized.title,
+    quote: normalized.quote,
+    reference: normalized.reference,
+    comment: normalized.comment,
     month,
     day,
     dateLabel: formatMonthDay(month, day),

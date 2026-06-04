@@ -14,9 +14,12 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import CheckIcon from "@mui/icons-material/Check";
 import ArticleIcon from "@mui/icons-material/Article";
+import Link from "next/link";
+import WeeklyServiceSection from "@/components/WeeklyServiceSection";
 
-const ZOOM_ID = "917964988";
-const ZOOM_URL = `https://zoom.us/j/${ZOOM_ID}`;
+const ZOOM_ID = "901964988";
+const ZOOM_URL =
+  "https://us02web.zoom.us/j/901964988?pwd=QkhEY1FFOUF2b1AzMmRwZ0VtejdVQT09";
 
 const meetings = [
   {
@@ -646,7 +649,7 @@ function MeetingCard({ meeting, index }) {
   );
 }
 
-export default function MeetingsSchedule() {
+export default function MeetingsSchedule({ weeklyService }) {
   const { copied, copy, reset } = useCopy();
 
   return (
@@ -655,6 +658,19 @@ export default function MeetingsSchedule() {
       <Container maxWidth="md" sx={{ py: { xs: 6, md: 10 } }}>
         <Stack spacing={{ xs: 5, md: 7 }}>
           <ZoomCard onCopy={copy} copied={copied} />
+          {weeklyService ? (
+            <Box>
+              <WeeklyServiceSection schedule={weeklyService} />
+              <Typography variant="body2" sx={{ mt: 2 }}>
+                <Link
+                  href="/business-meetings#monthly"
+                  style={{ color: "#c43c68", fontWeight: 600, textDecoration: "none" }}
+                >
+                  Monthly schedule &amp; business meeting minutes →
+                </Link>
+              </Typography>
+            </Box>
+          ) : null}
           <Box>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
