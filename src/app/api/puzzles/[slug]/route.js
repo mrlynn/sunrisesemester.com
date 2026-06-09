@@ -37,6 +37,8 @@ export async function GET(request, { params }) {
         weekOf: puzzle.weekOf,
         publishedAt: puzzle.publishedAt,
         crosswordData: puzzle.crosswordData,
+        reflectionThemed: Boolean(puzzle.reflectionThemed),
+        reflectionSummary: puzzle.reflectionSummary || "",
       },
       me: {
         userId,

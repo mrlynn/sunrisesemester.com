@@ -14,21 +14,7 @@ import MarkdownContent from "@/components/MarkdownContent";
 import RsvpDialog, { rsvpButtonSx } from "@/components/RsvpDialog";
 import WhosComing from "@/components/WhosComing";
 import CoordinationBoard from "@/components/CoordinationBoard";
-
-function formatEventDate(iso) {
-  try {
-    return new Date(iso).toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    });
-  } catch {
-    return "";
-  }
-}
+import { formatEventDate } from "@/lib/eventDates";
 
 function DetailHeader({ event }) {
   const { scrollY } = useScroll();

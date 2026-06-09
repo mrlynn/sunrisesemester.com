@@ -13,6 +13,8 @@ const PuzzleSchema = new mongoose.Schema(
       index: true,
     },
     crosswordData: { type: mongoose.Schema.Types.Mixed, required: true },
+    reflectionThemed: { type: Boolean, default: false },
+    reflectionSummary: { type: String, default: "" },
   },
   { timestamps: true },
 );

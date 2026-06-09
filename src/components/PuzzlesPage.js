@@ -121,8 +121,8 @@ export default function PuzzlesPage() {
               textShadow: "0 2px 12px rgba(0,0,0,0.35)",
             }}
           >
-            A gentle, recovery-themed crossword each week. Save your progress and see how you did on
-            the community board.
+            A gentle, recovery-themed crossword each week, often inspired by that week&apos;s daily
+            reflections. Save your progress and see how you did on the community board.
           </Typography>
         </Container>
       </Box>
@@ -205,6 +205,11 @@ export default function PuzzlesPage() {
                   <Typography sx={{ color: "#666", mt: 0.5 }}>
                     Week of {formatWeekOf(current.weekOf)}
                   </Typography>
+                  {current.reflectionSummary ? (
+                    <Typography sx={{ color: "#777", mt: 1, fontSize: "0.92rem", maxWidth: 480 }}>
+                      {current.reflectionSummary}
+                    </Typography>
+                  ) : null}
                 </Box>
                 <Button
                   component={Link}

@@ -5,6 +5,7 @@ import Event from "@/models/Event";
 import { assertAdmin } from "@/lib/requireAdmin";
 import { generateUniqueEventSlug } from "@/lib/events";
 import { parseBringSlots } from "@/lib/bringSlots";
+import { parseEventDateInput } from "@/lib/eventDates";
 
 const MAX_FLYER_BYTES = 25 * 1024 * 1024;
 const ALLOWED_FLYER_EXT = new Set(["pdf", "png", "jpg", "jpeg", "gif", "webp"]);
@@ -64,7 +65,7 @@ export async function PUT(request, context) {
       $set: {
         title,
         slug,
-        eventDate: new Date(get("eventDate")),
+        eventDate: parseEventDateInput(get("eventDate")),
         location: get("location").slice(0, 300),
         body: String(form.get("body") ?? ""),
         flyerImage: get("flyerImage").slice(0, 500),

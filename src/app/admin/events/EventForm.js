@@ -17,6 +17,7 @@ import IconButton from "@mui/material/IconButton";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import { BRING_CATEGORIES, CATEGORY_META } from "@/lib/coordination";
+import { formatEventDateInput } from "@/lib/eventDates";
 
 function slugify(value) {
   return String(value || "")
@@ -35,7 +36,7 @@ export default function EventForm({ initial, mode }) {
   // stop auto-syncing it from the title.
   const [slugTouched, setSlugTouched] = React.useState(Boolean(initial?.slug));
   const [eventDate, setEventDate] = React.useState(
-    initial?.eventDate ? new Date(initial.eventDate).toISOString().slice(0, 16) : "",
+    initial?.eventDate ? formatEventDateInput(initial.eventDate) : "",
   );
   const [location, setLocation] = React.useState(initial?.location ?? "");
   const [body, setBody] = React.useState(initial?.body ?? "");

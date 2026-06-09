@@ -5,6 +5,7 @@ import {
   serializeReflection,
   formatMonthDay,
 } from "@/lib/reflections";
+import { getCurrentPublishedPuzzle, serializePuzzleSummary } from "@/lib/puzzles";
 
 export const dynamic = "force-dynamic";
 
@@ -40,5 +41,10 @@ export default async function ReflectionDayPage({ params }) {
     notFound();
   }
   const reflection = serializeReflection(doc, new Date());
-  return <DailyReflection reflection={reflection} variant="standalone" />;
+  const weeklyPuzzle = serializePuzzleSummary(
+    await getCurrentPublishedPuzzle().catch(() => null),
+  );
+  return (
+    <DailyReflection reflection={reflection} variant="standalone" weeklyPuzzle={weeklyPuzzle} />
+  );
 }

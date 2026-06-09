@@ -64,6 +64,9 @@ export async function POST(request) {
     }
 
     await connectDB();
+    const reflectionThemed = Boolean(body.reflectionThemed);
+    const reflectionSummary = String(body.reflectionSummary ?? "").trim().slice(0, 500);
+
     const doc = await Puzzle.create({
       slug,
       title,
@@ -71,6 +74,8 @@ export async function POST(request) {
       status,
       publishedAt: status === "published" ? publishedAt || new Date() : null,
       crosswordData,
+      reflectionThemed,
+      reflectionSummary,
     });
     return NextResponse.json(doc.toObject());
   } catch (e) {

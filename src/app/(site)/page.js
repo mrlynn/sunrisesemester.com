@@ -10,7 +10,9 @@ import SunriseHero from "@/components/SunriseHero";
 import DailyReflection from "@/components/DailyReflection";
 import { getLanding } from "@/lib/landing";
 import { getTodaysReflection, serializeReflection } from "@/lib/reflections";
+import { getCurrentPublishedPuzzle, serializePuzzleSummary } from "@/lib/puzzles";
 import { listUpcomingEvents } from "@/lib/events";
+import { formatEventDate } from "@/lib/eventDates";
 
 export const dynamic = "force-dynamic";
 
@@ -19,13 +21,17 @@ export default async function HomePage() {
   const now = new Date();
   const reflectionDoc = await getTodaysReflection().catch(() => null);
   const reflection = serializeReflection(reflectionDoc, now);
+  const weeklyPuzzleDoc = await getCurrentPublishedPuzzle().catch(() => null);
+  const weeklyPuzzle = serializePuzzleSummary(weeklyPuzzleDoc);
   const upcomingEvents = await listUpcomingEvents().catch(() => []);
 
   return (
     <Box>
       <SunriseHero title={landing.heroTitle} subtitle={landing.heroSubtitle} />
 
-      {reflection ? <DailyReflection reflection={reflection} /> : null}
+      {reflection ? (
+        <DailyReflection reflection={reflection} weeklyPuzzle={weeklyPuzzle} />
+      ) : null}
 
       {upcomingEvents.length > 0 ? (
         <Container maxWidth="md" sx={{ py: { xs: 6, md: 8 } }}>
@@ -39,14 +45,7 @@ export default async function HomePage() {
                   <Box key={String(ev._id)}>
                     <Typography fontWeight={600}>{ev.title}</Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {new Date(ev.eventDate).toLocaleDateString("en-US", {
-                        weekday: "long",
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
+                      {formatEventDate(ev.eventDate)}
                       {ev.location ? ` · ${ev.location}` : ""}
                     </Typography>
                   </Box>

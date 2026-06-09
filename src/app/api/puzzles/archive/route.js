@@ -8,7 +8,14 @@ export async function GET() {
     const puzzles = await Puzzle.find({ status: "published", publishedAt: { $ne: null } })
       .sort({ publishedAt: -1 })
       .limit(20)
-      .select({ slug: 1, title: 1, weekOf: 1, publishedAt: 1 })
+      .select({
+        slug: 1,
+        title: 1,
+        weekOf: 1,
+        publishedAt: 1,
+        reflectionThemed: 1,
+        reflectionSummary: 1,
+      })
       .lean();
     return NextResponse.json({
       puzzles: puzzles.map((p) => ({
@@ -16,6 +23,8 @@ export async function GET() {
         title: p.title,
         weekOf: p.weekOf,
         publishedAt: p.publishedAt,
+        reflectionThemed: Boolean(p.reflectionThemed),
+        reflectionSummary: p.reflectionSummary || "",
       })),
     });
   } catch (e) {

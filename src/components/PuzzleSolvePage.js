@@ -178,14 +178,18 @@ export default function PuzzleSolvePage({ slug }) {
     }
   }
 
+  // A proper crossword theme. The library paints every "unused" cell with
+  // gridBackground, so this must be a solid dark color (the classic black
+  // squares). cellBorder needs to be opaque too, otherwise rows of used cells
+  // visually merge into one another.
   const theme = {
-    gridBackground: "transparent",
+    gridBackground: "#1d1d1d",
     cellBackground: "#ffffff",
-    cellBorder: "rgba(0,0,0,0.18)",
+    cellBorder: "#1d1d1d",
     textColor: "#1d1d1d",
-    numberColor: "rgba(0,0,0,0.28)",
-    focusBackground: "rgba(255,107,53,0.35)",
-    highlightBackground: "rgba(255,215,125,0.35)",
+    numberColor: "#666666",
+    focusBackground: "#ffd166",
+    highlightBackground: "#fff3c4",
   };
 
   return (
@@ -232,6 +236,18 @@ export default function PuzzleSolvePage({ slug }) {
             {puzzle?.weekOf ? (
               <Typography sx={{ color: "rgba(255,255,255,0.9)" }}>
                 Week of {formatWeekOf(puzzle.weekOf)}
+              </Typography>
+            ) : null}
+            {puzzle?.reflectionSummary ? (
+              <Typography
+                sx={{
+                  color: "rgba(255,255,255,0.8)",
+                  fontSize: "0.95rem",
+                  maxWidth: 520,
+                  mt: 0.5,
+                }}
+              >
+                {puzzle.reflectionSummary}
               </Typography>
             ) : null}
             <Typography sx={{ color: "rgba(255,255,255,0.75)", fontSize: "0.95rem" }}>
@@ -313,21 +329,57 @@ export default function PuzzleSolvePage({ slug }) {
                   p: { xs: 2, md: 3 },
                   borderRadius: 3,
                   borderColor: "#eee",
+                  // Layout: side-by-side on desktop, stacked on mobile.
+                  // The library tags its subtrees with these class names.
+                  "& .crossword.grid": {
+                    width: "100%",
+                    maxWidth: { xs: "100%", md: 560 },
+                    flex: "0 0 auto",
+                  },
+                  "& .clues": {
+                    padding: { xs: "0", md: "0 0 0 1.5rem" },
+                    flex: "1 1 auto",
+                    minWidth: 0,
+                    "& .direction": {
+                      marginBottom: "1.5em",
+                      "& .header": {
+                        margin: 0,
+                        fontWeight: 900,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        fontSize: "0.85rem",
+                        color: "#1d1d1d",
+                      },
+                      "& div": {
+                        fontSize: "0.95rem",
+                        lineHeight: 1.45,
+                      },
+                    },
+                  },
                 }}
               >
-                <ThemeProvider theme={theme}>
-                  <Crossword
-                    ref={crosswordRef}
-                    data={puzzle.crosswordData}
-                    useStorage={false}
-                    onCellChange={onCellChange}
-                    onCrosswordCorrect={(isCorrect) => {
-                      if (isCorrect && !run?.completedAt) {
-                        submitIfCorrect();
-                      }
-                    }}
-                  />
-                </ThemeProvider>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    alignItems: { xs: "stretch", md: "flex-start" },
+                    gap: { xs: 3, md: 0 },
+                  }}
+                >
+                  <ThemeProvider theme={theme}>
+                    <Crossword
+                      ref={crosswordRef}
+                      data={puzzle.crosswordData}
+                      useStorage={false}
+                      onCellChange={onCellChange}
+                      onCrosswordCorrect={(isCorrect) => {
+                        if (isCorrect && !run?.completedAt) {
+                          submitIfCorrect();
+                        }
+                      }}
+                    />
+                  </ThemeProvider>
+                </Box>
               </Paper>
 
               <Divider />

@@ -49,6 +49,13 @@ export async function PUT(request, { params }) {
       crosswordData: body.crosswordData ?? null,
     };
 
+    if ("reflectionThemed" in body) {
+      update.reflectionThemed = Boolean(body.reflectionThemed);
+    }
+    if ("reflectionSummary" in body) {
+      update.reflectionSummary = String(body.reflectionSummary ?? "").trim().slice(0, 500);
+    }
+
     Object.keys(update).forEach((k) => {
       if (update[k] === "" || update[k] === null) {
         delete update[k];

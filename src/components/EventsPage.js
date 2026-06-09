@@ -11,6 +11,7 @@ import Button from "@mui/material/Button";
 import Link from "next/link";
 import MarkdownContent from "@/components/MarkdownContent";
 import RsvpDialog, { rsvpButtonSx } from "@/components/RsvpDialog";
+import { formatEventDate } from "@/lib/eventDates";
 
 function HeaderBanner() {
   const { scrollY } = useScroll();
@@ -235,14 +236,7 @@ function EventCard({ ev, index, past }) {
                 color: past ? "#888888" : "#ff6b35",
               }}
             >
-              {new Date(ev.eventDate).toLocaleDateString("en-US", {
-                weekday: "long",
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-                hour: "numeric",
-                minute: "2-digit",
-              })}
+              {formatEventDate(ev.eventDate)}
               {ev.location ? ` · ${ev.location}` : ""}
             </Typography>
           </Box>

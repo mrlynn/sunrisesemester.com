@@ -14,19 +14,9 @@ import connectDB from "@/lib/mongodb";
 import Event from "@/models/Event";
 import Rsvp from "@/models/Rsvp";
 import { COOKIE_NAME, verifyAdminToken } from "@/lib/auth";
+import { formatEventDate } from "@/lib/eventDates";
 
 export const metadata = { title: "Events (editor)" };
-
-function formatDate(d) {
-  return new Date(d).toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
 
 export default async function AdminEventsPage() {
   const store = await cookies();
@@ -80,7 +70,10 @@ export default async function AdminEventsPage() {
                       {ev.title}
                     </Button>
                   }
-                  secondary={formatDate(ev.eventDate)}
+                  secondary={formatEventDate(ev.eventDate, {
+                    weekday: "short",
+                    month: "short",
+                  })}
                 />
                 {ev.rsvpEnabled ? (
                   <Chip

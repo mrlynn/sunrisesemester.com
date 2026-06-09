@@ -46,6 +46,47 @@ export async function getTodaysReflection() {
   return getReflection(now.getMonth() + 1, now.getDate());
 }
 
+function reflectionsCollection() {
+  if (!process.env.MONGODB_URI) {
+    return null;
+  }
+  return connectDB().then((conn) => {
+    const client = conn.connection.getClient();
+    return client.db(REFLECTIONS_DB).collection(REFLECTIONS_COLLECTION);
+  });
+}
+
+const REFLECTION_LIST_PROJECTION = {
+  embedding: 0,
+  cleanedAt: 0,
+  commentCleaned: 0,
+  fixedAt: 0,
+  fixedFromCorrupt: 0,
+};
+
+/** Fetch daily reflections for each { month, day } in `days`. */
+export async function getReflectionsForDays(days) {
+  if (!days?.length || !process.env.MONGODB_URI) {
+    return [];
+  }
+  const coll = await reflectionsCollection();
+  if (!coll) return [];
+
+  const or = days.map(({ month, day }) => ({
+    month: Number(month),
+    day: Number(day),
+  }));
+
+  const docs = await coll
+    .find({ $or: or }, { projection: REFLECTION_LIST_PROJECTION })
+    .toArray();
+
+  const key = (m, d) => `${m},${d}`;
+  const order = new Map(days.map((d, i) => [key(d.month, d.day), i]));
+  docs.sort((a, b) => (order.get(key(a.month, a.day)) ?? 99) - (order.get(key(b.month, b.day)) ?? 99));
+  return docs;
+}
+
 export async function listReflectionsByMonth(month) {
   if (!process.env.MONGODB_URI) {
     return [];

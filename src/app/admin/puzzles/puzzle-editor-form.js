@@ -55,6 +55,13 @@ export default function PuzzleEditorForm({ mode, initialPuzzle }) {
     const data = initialPuzzle?.crosswordData || defaultCrosswordData();
     return JSON.stringify(data, null, 2);
   });
+  const [reflectionThemed, setReflectionThemed] = React.useState(
+    Boolean(initialPuzzle?.reflectionThemed),
+  );
+  const [reflectionSummary, setReflectionSummary] = React.useState(
+    initialPuzzle?.reflectionSummary || "",
+  );
+  const [generateInfo, setGenerateInfo] = React.useState("");
 
   React.useEffect(() => {
     // Light debounce validation for nicer UX.
@@ -107,6 +114,8 @@ export default function PuzzleEditorForm({ mode, initialPuzzle }) {
         weekOf: weekOf ? new Date(`${weekOf}T00:00:00`) : undefined,
         publishedAt: publishedAt ? new Date(publishedAt) : undefined,
         crosswordData,
+        reflectionThemed,
+        reflectionSummary,
       };
 
       const url =
@@ -137,6 +146,7 @@ export default function PuzzleEditorForm({ mode, initialPuzzle }) {
 
   async function generateFromBank() {
     setError("");
+    setGenerateInfo("");
     setBusy(true);
     try {
       const res = await fetch("/api/admin/puzzles/generate", {
@@ -147,6 +157,41 @@ export default function PuzzleEditorForm({ mode, initialPuzzle }) {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Could not generate puzzle.");
       setJsonText(JSON.stringify(data.crosswordData, null, 2));
+      setReflectionThemed(false);
+      setReflectionSummary("");
+      setGenerateInfo(`Placed ${data.placedWords ?? "?"} words from the crossword bank.`);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function generateFromReflections() {
+    setError("");
+    setGenerateInfo("");
+    setBusy(true);
+    try {
+      const res = await fetch("/api/admin/puzzles/generate-from-reflections", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          weekOf: weekOf ? new Date(`${weekOf}T00:00:00`).toISOString() : undefined,
+          targetWords: 10,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Could not generate from reflections.");
+      setJsonText(JSON.stringify(data.crosswordData, null, 2));
+      if (data.title) setTitle(data.title);
+      if (data.weekOf) setWeekOf(toIsoDateOnly(data.weekOf));
+      setReflectionThemed(true);
+      setReflectionSummary(data.reflectionSummary || "");
+      const n = data.reflectionsUsed?.length ?? 0;
+      const matched = data.matchedEntries ?? 0;
+      setGenerateInfo(
+        `Placed ${data.placedWords ?? "?"} words using ${n} daily reflections (${matched} themed bank matches).`,
+      );
     } catch (e) {
       setError(e.message);
     } finally {
@@ -155,13 +200,13 @@ export default function PuzzleEditorForm({ mode, initialPuzzle }) {
   }
 
   const previewTheme = {
-    gridBackground: "transparent",
+    gridBackground: "#1d1d1d",
     cellBackground: "#ffffff",
-    cellBorder: "rgba(0,0,0,0.18)",
+    cellBorder: "#1d1d1d",
     textColor: "#1d1d1d",
-    numberColor: "rgba(0,0,0,0.28)",
-    focusBackground: "rgba(255,107,53,0.25)",
-    highlightBackground: "rgba(255,215,125,0.35)",
+    numberColor: "#666666",
+    focusBackground: "#ffd166",
+    highlightBackground: "#fff3c4",
   };
 
   return (
@@ -172,6 +217,8 @@ export default function PuzzleEditorForm({ mode, initialPuzzle }) {
         </Typography>
 
         {error ? <Alert severity="error">{error}</Alert> : null}
+        {generateInfo ? <Alert severity="success">{generateInfo}</Alert> : null}
+        {reflectionSummary ? <Alert severity="info">{reflectionSummary}</Alert> : null}
         {jsonError ? <Alert severity="warning">{jsonError}</Alert> : null}
 
         <Paper variant="outlined" sx={{ p: 3, borderRadius: 3 }}>
@@ -230,14 +277,33 @@ export default function PuzzleEditorForm({ mode, initialPuzzle }) {
                 fullWidth
                 helperText="Format matches @jaredreisinger/react-crossword data: { across: { 1: { clue, answer, row, col } }, down: { ... } }"
               />
-              <Button
-                onClick={generateFromBank}
-                disabled={busy}
-                variant="outlined"
-                sx={{ alignSelf: "flex-start", fontWeight: 900 }}
-              >
-                Generate from crossword bank
-              </Button>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={1.25} sx={{ flexWrap: "wrap" }}>
+                <Button
+                  onClick={generateFromReflections}
+                  disabled={busy}
+                  variant="contained"
+                  sx={{
+                    alignSelf: "flex-start",
+                    fontWeight: 900,
+                    background: "linear-gradient(135deg, #5b2c6f 0%, #c43c68 100%)",
+                    "&:hover": { background: "linear-gradient(135deg, #6d3a82 0%, #d4556f 100%)" },
+                  }}
+                >
+                  Generate from this week&apos;s reflections
+                </Button>
+                <Button
+                  onClick={generateFromBank}
+                  disabled={busy}
+                  variant="outlined"
+                  sx={{ alignSelf: "flex-start", fontWeight: 900 }}
+                >
+                  Generate from crossword bank
+                </Button>
+              </Stack>
+              <Typography sx={{ color: "#666", fontSize: "0.9rem" }}>
+                Reflection generation uses the seven daily reflections for the &quot;Week of&quot; date
+                (Monday–Sunday) and picks matching clues from the bank.
+              </Typography>
 
               <Box>
                 <Typography sx={{ fontWeight: 800, mb: 1, color: "#1d1d1d" }}>
@@ -250,12 +316,43 @@ export default function PuzzleEditorForm({ mode, initialPuzzle }) {
                     borderRadius: 2,
                     borderColor: "#eee",
                     background: previewData ? "#fff" : "#fafafa",
+                    "& .crossword.grid": {
+                      width: "100%",
+                      maxWidth: { xs: "100%", md: 460 },
+                      flex: "0 0 auto",
+                    },
+                    "& .clues": {
+                      padding: { xs: 0, md: "0 0 0 1.5rem" },
+                      flex: "1 1 auto",
+                      minWidth: 0,
+                      "& .direction": {
+                        marginBottom: "1.5em",
+                        "& .header": {
+                          margin: 0,
+                          fontWeight: 900,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                          fontSize: "0.8rem",
+                          color: "#1d1d1d",
+                        },
+                        "& div": { fontSize: "0.9rem", lineHeight: 1.4 },
+                      },
+                    },
                   }}
                 >
                   {previewData ? (
-                    <ThemeProvider theme={previewTheme}>
-                      <Crossword data={previewData} useStorage={false} />
-                    </ThemeProvider>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", md: "row" },
+                        alignItems: { xs: "stretch", md: "flex-start" },
+                        gap: { xs: 2, md: 0 },
+                      }}
+                    >
+                      <ThemeProvider theme={previewTheme}>
+                        <Crossword data={previewData} useStorage={false} />
+                      </ThemeProvider>
+                    </Box>
                   ) : (
                     <Typography sx={{ color: "#777", fontSize: "0.95rem" }}>
                       Fix the JSON/overlaps above to see a live preview.
