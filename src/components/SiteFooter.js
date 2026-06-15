@@ -129,6 +129,57 @@ export default function SiteFooter() {
                     Resources
                   </Typography>
                 </NextLink>
+                <NextLink href="/subscribe" style={{ textDecoration: "none" }}>
+                  <Typography
+                    component="span"
+                    sx={{
+                      color: "#ff6b35",
+                      fontWeight: 600,
+                      transition: "all 0.2s ease",
+                      display: "inline-block",
+                      fontSize: "0.95rem",
+                      "&:hover": {
+                        color: "#ff5a1f",
+                      },
+                    }}
+                  >
+                    Get updates
+                  </Typography>
+                </NextLink>
+                <NextLink href="/member/login" style={{ textDecoration: "none" }}>
+                  <Typography
+                    component="span"
+                    sx={{
+                      color: "#ff6b35",
+                      fontWeight: 600,
+                      transition: "all 0.2s ease",
+                      display: "inline-block",
+                      fontSize: "0.95rem",
+                      "&:hover": {
+                        color: "#ff5a1f",
+                      },
+                    }}
+                  >
+                    Member sign-in
+                  </Typography>
+                </NextLink>
+                <NextLink href="/our-group" style={{ textDecoration: "none" }}>
+                  <Typography
+                    component="span"
+                    sx={{
+                      color: "#ff6b35",
+                      fontWeight: 600,
+                      transition: "all 0.2s ease",
+                      display: "inline-block",
+                      fontSize: "0.95rem",
+                      "&:hover": {
+                        color: "#ff5a1f",
+                      },
+                    }}
+                  >
+                    Our group
+                  </Typography>
+                </NextLink>
               </Stack>
             </Stack>
           </Box>

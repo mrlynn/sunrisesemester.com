@@ -46,7 +46,7 @@ export async function getTodaysReflection() {
   return getReflection(now.getMonth() + 1, now.getDate());
 }
 
-function reflectionsCollection() {
+function getReflectionsCollection() {
   if (!process.env.MONGODB_URI) {
     return null;
   }
@@ -69,7 +69,7 @@ export async function getReflectionsForDays(days) {
   if (!days?.length || !process.env.MONGODB_URI) {
     return [];
   }
-  const coll = await reflectionsCollection();
+  const coll = await getReflectionsCollection();
   if (!coll) return [];
 
   const or = days.map(({ month, day }) => ({

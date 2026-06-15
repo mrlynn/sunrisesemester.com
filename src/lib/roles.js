@@ -63,6 +63,8 @@ export const ADMIN_NAV = [
   { href: "/admin/puzzles", label: "Puzzles", roles: ["admin", "editor"] },
   { href: "/admin/crossword-bank", label: "Crossword bank", roles: ["admin", "editor"] },
   { href: "/admin/service-roles", label: "Service", roles: ["admin", "editor"] },
+  { href: "/admin/subscribers", label: "Subscribers", roles: ["admin", "editor"] },
+  { href: "/admin/members", label: "Members", roles: ["admin", "editor"] },
   { href: "/admin/business-meetings", label: "Minutes", roles: ["admin", "editor", "secretary"] },
   { href: "/admin/weekly-service", label: "Weekly service", roles: ["admin", "editor", "secretary"] },
   { href: "/admin/users", label: "Users", roles: ["admin"] },

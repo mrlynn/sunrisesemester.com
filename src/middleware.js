@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { COOKIE_NAME } from "./lib/auth";
+import { MEMBER_COOKIE_NAME } from "./lib/memberAuth";
 import { canAccessAdminPath, defaultAdminPath, isRole } from "./lib/roles";
 
 const STATIC_ASSET_PATH =
   /\.(?:woff2?|ttf|otf|eot|png|jpe?g|gif|webp|svg|ico|css|js|map)$/i;
 
-function redirectToLogin(request) {
+const MEMBER_PUBLIC_PATHS = new Set(["/member/login", "/member/register"]);
+
+function redirectToAdminLogin(request) {
   const res = NextResponse.redirect(new URL("/admin", request.url));
   res.cookies.set(COOKIE_NAME, "", {
     httpOnly: true,
@@ -16,16 +19,16 @@ function redirectToLogin(request) {
   return res;
 }
 
+function redirectToMemberLogin(request) {
+  const next = encodeURIComponent(request.nextUrl.pathname);
+  return NextResponse.redirect(new URL(`/member/login?next=${next}`, request.url));
+}
+
 export async function middleware(request) {
   const pathname = request.nextUrl.pathname;
 
   if (STATIC_ASSET_PATH.test(pathname)) {
     return new NextResponse(null, { status: 404 });
-  }
-
-  // Sign-in page must stay reachable without a session (avoid redirect loops).
-  if (pathname === "/admin") {
-    return NextResponse.next();
   }
 
   const secret = process.env.AUTH_SECRET;
@@ -36,27 +39,54 @@ export async function middleware(request) {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith("/member")) {
+    if (MEMBER_PUBLIC_PATHS.has(pathname)) {
+      return NextResponse.next();
+    }
+    const memberToken = request.cookies.get(MEMBER_COOKIE_NAME)?.value;
+    if (!memberToken) {
+      return redirectToMemberLogin(request);
+    }
+    try {
+      const { payload } = await jwtVerify(memberToken, new TextEncoder().encode(secret));
+      if (payload.role !== "member") {
+        return redirectToMemberLogin(request);
+      }
+      return NextResponse.next();
+    } catch {
+      return redirectToMemberLogin(request);
+    }
+  }
+
+  if (!pathname.startsWith("/admin")) {
+    return NextResponse.next();
+  }
+
+  // Sign-in page must stay reachable without a session (avoid redirect loops).
+  if (pathname === "/admin") {
+    return NextResponse.next();
+  }
+
   const token = request.cookies.get(COOKIE_NAME)?.value;
   if (!token) {
-    return redirectToLogin(request);
+    return redirectToAdminLogin(request);
   }
 
   try {
     const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
     const role = payload.role;
     if (!isRole(role)) {
-      return redirectToLogin(request);
+      return redirectToAdminLogin(request);
     }
     if (!canAccessAdminPath(pathname, role)) {
       return NextResponse.redirect(new URL(defaultAdminPath(role), request.url));
     }
     return NextResponse.next();
   } catch {
-    return redirectToLogin(request);
+    return redirectToAdminLogin(request);
   }
 }
 
 export const config = {
-  // Protect /admin/* sub-routes only — not /admin (login).
-  matcher: ["/admin/:path+"],
+  matcher: ["/admin/:path+", "/member/:path+"],
 };
