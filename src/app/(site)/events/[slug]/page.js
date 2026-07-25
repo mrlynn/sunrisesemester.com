@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import EventDetail from "@/components/EventDetail";
 import { getEventBySlug, listEventAttendees, getEventCoordination } from "@/lib/events";
+import { pageSocialMetadata } from "@/lib/ogMetadata";
 
 export const dynamic = "force-dynamic";
 
@@ -8,12 +9,17 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const ev = await getEventBySlug(slug);
   if (!ev) return { title: "Event" };
-  return {
+  const description = ev.location
+    ? `${ev.title} — ${ev.location}`
+    : `${ev.title} — Sunrise Semester event.`;
+  return pageSocialMetadata({
     title: ev.title,
-    description: ev.location
-      ? `${ev.title} — ${ev.location}`
-      : `${ev.title} — Sunrise Semester event.`,
-  };
+    description,
+    image: ev.flyerImage,
+    imageAlt: ev.title,
+    type: "article",
+    path: ev.slug ? `/events/${ev.slug}` : undefined,
+  });
 }
 
 export default async function EventDetailRoute({ params }) {
