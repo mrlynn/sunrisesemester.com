@@ -104,6 +104,7 @@ export default function SiteFooter() {
             <Stack spacing={3}>
               <Stack direction="row" spacing={3} sx={{ flexWrap: "wrap" }}>
                 <FooterLink href="/admin">Editor Sign-in</FooterLink>
+                <FooterLink href="/report">Report a concern</FooterLink>
                 <Typography
                   component="a"
                   href="https://www.aa.org/"

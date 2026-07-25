@@ -15,6 +15,7 @@ export const SITE_NAV_MORE = [
   { href: "/literature", label: "Literature" },
   { href: "/events", label: "Events" },
   { href: "/business-meetings", label: "Group service" },
+  { href: "/report", label: "Report a concern" },
 ];
 
 /** Mobile drawer / footer-oriented groups */
@@ -44,6 +45,7 @@ export const SITE_NAV_GROUPS = [
     items: [
       { href: "/our-group", label: "Our group" },
       { href: "/business-meetings", label: "Group service" },
+      { href: "/report", label: "Report a concern" },
       { href: "/subscribe", label: "Email updates" },
     ],
   },
