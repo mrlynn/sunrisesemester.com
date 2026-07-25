@@ -93,10 +93,10 @@ Use the same admin-only auth path as user management (`canManageUsers` / `assert
 
 Recipient: `sunrisesemesteraa@gmail.com` (configurable via env e.g. `REPORTS_TO_EMAIL`, defaulting to that address).
 
-- From: existing `RESEND_FROM_EMAIL`
+- From: `FROM_EMAIL` via Gmail SMTP (Google App Password; not Resend)
 - Subject: `[Report] {category}: {subject}`
 - Body: category, subject, details, optional contact fields, submitted time, link to `/admin/reports`
-- Add `sendReportNotificationEmail` in `@/lib/email.js`
+- Add `sendReportNotificationEmail` in `@/lib/email.js` (nodemailer)
 
 ## Admin inbox
 

@@ -40,13 +40,13 @@
 - Public signup: `/subscribe` (double opt-in via `/subscribe/confirm`).
 - Unsubscribe: `/unsubscribe?token=...` (token from each email).
 - Admin: `/admin/subscribers` (list, CSV export, send updates).
-- Required env: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `MONGODB_URI`, `NEXT_PUBLIC_BASE_URL`.
-- Before production sends: verify the sending domain in [Resend](https://resend.com/domains) and add DNS records (SPF/DKIM).
+- Required env: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `FROM_EMAIL`, `MONGODB_URI`, `NEXT_PUBLIC_BASE_URL`.
+- Mail uses Gmail SMTP + Google App Password via nodemailer (not Resend).
 
 ### Anonymous reports
 - Public form: `/report`
 - Admin inbox: `/admin/reports` (admin role only)
 - Model: `src/models/Report.js`
-- Email: Resend -> `REPORTS_TO_EMAIL` (default `sunrisesemesteraa@gmail.com`)
-- Required env for email: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `NEXT_PUBLIC_BASE_URL`
+- Email: SMTP -> `REPORTS_TO_EMAIL` (default `sunrisesemesteraa@gmail.com`)
+- Required env for email: `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`, `FROM_EMAIL`, `NEXT_PUBLIC_BASE_URL`
 

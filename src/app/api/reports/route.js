@@ -35,7 +35,11 @@ export async function POST(request) {
 
     if (isEmailConfigured()) {
       try {
-        const base = (process.env.NEXT_PUBLIC_BASE_URL || "").replace(/\/$/, "");
+        const base = (
+          process.env.NEXT_PUBLIC_BASE_URL ||
+          process.env.NEXTAUTH_URL ||
+          "https://sunrisesemester.com"
+        ).replace(/\/$/, "");
         await sendReportNotificationEmail({
           report,
           adminUrl: `${base}/admin/reports`,

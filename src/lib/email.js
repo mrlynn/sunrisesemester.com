@@ -1,19 +1,34 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-function getResend() {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error("RESEND_API_KEY is not configured.");
+function smtpConfig() {
+  const host = process.env.SMTP_HOST?.trim();
+  const user = process.env.SMTP_USER?.trim();
+  const pass = process.env.SMTP_PASS?.trim();
+  const port = Number(process.env.SMTP_PORT || 465);
+  if (!host || !user || !pass) {
+    return null;
   }
-  return new Resend(apiKey);
+  const secure = port === 465;
+  return { host, port, secure, auth: { user, pass } };
 }
 
 function fromAddress() {
-  const from = process.env.RESEND_FROM_EMAIL;
+  const from =
+    process.env.FROM_EMAIL?.trim() ||
+    process.env.EMAIL_FROM?.trim() ||
+    process.env.SMTP_USER?.trim();
   if (!from) {
-    throw new Error("RESEND_FROM_EMAIL is not configured.");
+    throw new Error("FROM_EMAIL (or EMAIL_FROM / SMTP_USER) is not configured.");
   }
   return from;
+}
+
+function getTransport() {
+  const config = smtpConfig();
+  if (!config) {
+    throw new Error("SMTP is not configured (need SMTP_HOST, SMTP_USER, SMTP_PASS).");
+  }
+  return nodemailer.createTransport(config);
 }
 
 function escapeHtml(text) {
@@ -28,10 +43,19 @@ function plainTextToHtml(text) {
   return escapeHtml(text).replace(/\n/g, "<br />");
 }
 
-export async function sendConfirmationEmail({ email, confirmUrl }) {
-  const resend = getResend();
-  const { error } = await resend.emails.send({
+async function sendMail({ to, subject, html, text }) {
+  const transport = getTransport();
+  await transport.sendMail({
     from: fromAddress(),
+    to,
+    subject,
+    html,
+    text,
+  });
+}
+
+export async function sendConfirmationEmail({ email, confirmUrl }) {
+  await sendMail({
     to: email,
     subject: "Confirm your Sunrise Semester updates subscription",
     html: `
@@ -43,16 +67,11 @@ export async function sendConfirmationEmail({ email, confirmUrl }) {
     `,
     text: `Thanks for signing up for Sunrise Semester group updates.\n\nConfirm your subscription:\n${confirmUrl}\n\nIf you did not request this, you can ignore this email.`,
   });
-  if (error) {
-    throw new Error(error.message || "Failed to send confirmation email.");
-  }
 }
 
 export async function sendBroadcastEmail({ to, subject, body, unsubscribeUrl }) {
-  const resend = getResend();
   const htmlBody = plainTextToHtml(body);
-  const { error } = await resend.emails.send({
-    from: fromAddress(),
+  await sendMail({
     to,
     subject,
     html: `
@@ -65,17 +84,13 @@ export async function sendBroadcastEmail({ to, subject, body, unsubscribeUrl }) 
     `,
     text: `${body}\n\n---\nUnsubscribe: ${unsubscribeUrl}`,
   });
-  if (error) {
-    throw new Error(error.message || "Failed to send email.");
-  }
 }
 
 export function isEmailConfigured() {
-  return Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL);
+  return Boolean(smtpConfig() && (process.env.FROM_EMAIL || process.env.EMAIL_FROM || process.env.SMTP_USER));
 }
 
 export async function sendReportNotificationEmail({ report, adminUrl }) {
-  const resend = getResend();
   const to = process.env.REPORTS_TO_EMAIL?.trim() || "sunrisesemesteraa@gmail.com";
   const category = String(report.category || "");
   const subject = String(report.subject || "");
@@ -99,8 +114,7 @@ export async function sendReportNotificationEmail({ report, adminUrl }) {
     `Admin: ${adminUrl}`,
   ].join("\n");
 
-  const { error } = await resend.emails.send({
-    from: fromAddress(),
+  await sendMail({
     to,
     subject: `[Report] ${category}: ${subject}`.slice(0, 200),
     html: `
@@ -117,7 +131,4 @@ export async function sendReportNotificationEmail({ report, adminUrl }) {
     `,
     text,
   });
-  if (error) {
-    throw new Error(error.message || "Failed to send report notification.");
-  }
 }
