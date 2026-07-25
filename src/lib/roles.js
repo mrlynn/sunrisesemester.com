@@ -45,6 +45,9 @@ export function canAccessAdminPath(pathname, role) {
   if (pathname.startsWith("/admin/users")) {
     return canManageUsers(role);
   }
+  if (pathname.startsWith("/admin/reports")) {
+    return canManageUsers(role);
+  }
   if (
     pathname.startsWith("/admin/business-meetings") ||
     pathname.startsWith("/admin/weekly-service")
@@ -126,6 +129,12 @@ export const ADMIN_NAV = [
   {
     href: "/admin/users",
     label: "Users",
+    group: "system",
+    roles: ["admin"],
+  },
+  {
+    href: "/admin/reports",
+    label: "Reports",
     group: "system",
     roles: ["admin"],
   },

@@ -1,6 +1,10 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { parseReportInput, REPORT_CATEGORIES } from "./reports.js";
+import {
+  parseAdminReportPatch,
+  parseReportInput,
+  REPORT_CATEGORIES,
+} from "./reports.js";
 
 describe("parseReportInput", () => {
   it("accepts a minimal anonymous report", () => {
@@ -46,5 +50,27 @@ describe("parseReportInput", () => {
     assert.equal(result.ok, true);
     assert.equal(result.value.contactEmail, "friend@example.com");
     assert.equal(result.value.contactPhone, "555-0100");
+  });
+});
+
+describe("parseAdminReportPatch", () => {
+  it("accepts status and notes updates", () => {
+    const result = parseAdminReportPatch({
+      status: "reviewed",
+      adminNotes: "Looked into this and replied offline.",
+    });
+    assert.equal(result.ok, true);
+    assert.deepEqual(result.value, {
+      status: "reviewed",
+      adminNotes: "Looked into this and replied offline.",
+    });
+  });
+
+  it("rejects invalid statuses", () => {
+    const result = parseAdminReportPatch({
+      status: "pending",
+    });
+    assert.equal(result.ok, false);
+    assert.equal(result.status, 400);
   });
 });

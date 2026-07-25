@@ -43,3 +43,10 @@
 - Required env: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `MONGODB_URI`, `NEXT_PUBLIC_BASE_URL`.
 - Before production sends: verify the sending domain in [Resend](https://resend.com/domains) and add DNS records (SPF/DKIM).
 
+### Anonymous reports
+- Public form: `/report`
+- Admin inbox: `/admin/reports` (admin role only)
+- Model: `src/models/Report.js`
+- Email: Resend -> `REPORTS_TO_EMAIL` (default `sunrisesemesteraa@gmail.com`)
+- Required env for email: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `NEXT_PUBLIC_BASE_URL`
+
