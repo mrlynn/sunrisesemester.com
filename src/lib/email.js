@@ -73,3 +73,51 @@ export async function sendBroadcastEmail({ to, subject, body, unsubscribeUrl }) 
 export function isEmailConfigured() {
   return Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL);
 }
+
+export async function sendReportNotificationEmail({ report, adminUrl }) {
+  const resend = getResend();
+  const to = process.env.REPORTS_TO_EMAIL?.trim() || "sunrisesemesteraa@gmail.com";
+  const category = String(report.category || "");
+  const subject = String(report.subject || "");
+  const contactLines = [];
+  if (report.contactEmail) contactLines.push(`Email: ${report.contactEmail}`);
+  if (report.contactPhone) contactLines.push(`Phone: ${report.contactPhone}`);
+  const contactBlock = contactLines.length
+    ? contactLines.join("\n")
+    : "No contact provided (anonymous).";
+
+  const text = [
+    `New report (${category})`,
+    "",
+    `Subject: ${subject}`,
+    "",
+    String(report.body || ""),
+    "",
+    contactBlock,
+    "",
+    `Submitted: ${report.createdAt ? new Date(report.createdAt).toISOString() : "just now"}`,
+    `Admin: ${adminUrl}`,
+  ].join("\n");
+
+  const { error } = await resend.emails.send({
+    from: fromAddress(),
+    to,
+    subject: `[Report] ${category}: ${subject}`.slice(0, 200),
+    html: `
+      <p><strong>New report</strong> (${escapeHtml(category)})</p>
+      <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
+      <div>${plainTextToHtml(String(report.body || ""))}</div>
+      <p>${plainTextToHtml(contactBlock)}</p>
+      <p style="color:#666;font-size:12px;">
+        Submitted: ${escapeHtml(
+          report.createdAt ? new Date(report.createdAt).toISOString() : "just now",
+        )}<br />
+        <a href="${escapeHtml(adminUrl)}">Open admin reports</a>
+      </p>
+    `,
+    text,
+  });
+  if (error) {
+    throw new Error(error.message || "Failed to send report notification.");
+  }
+}
