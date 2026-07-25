@@ -20,6 +20,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
+import SlideshowIcon from "@mui/icons-material/Slideshow";
 
 const ZOOM_ID = "901 964 988";
 const ZOOM_PASSWORD = "417417";
@@ -30,10 +31,15 @@ const PAYPAL_URL = "https://paypal.me/sunrisesemester";
 const DAILY_REFLECTION_URL = "https://www.aa.org/daily-reflections";
 const ZOOM_DOWNLOAD_URL = "https://zoom.us/download";
 const HOST_KEY_EMAIL = "sunrisesemesteraa@gmail.com";
+const TRAINING_DECK_EMBED =
+  "https://docs.google.com/presentation/d/e/2PACX-1vSM9yuyuOYfxKln4PihpeYctuLWwtIVADp2gjSchva_a7vRbmvobyEpbR4p4hEfwCIAZt0BgieVyUtG/pubembed?start=false&loop=false&delayms=3000";
+const TRAINING_DECK_PUB =
+  "https://docs.google.com/presentation/d/e/2PACX-1vSM9yuyuOYfxKln4PihpeYctuLWwtIVADp2gjSchva_a7vRbmvobyEpbR4p4hEfwCIAZt0BgieVyUtG/pub?start=false&loop=false&delayms=3000";
 
 const toc = [
   { id: "what-a-sherpa-does", label: "What a Sherpa Does" },
   { id: "becoming-a-sherpa", label: "Becoming a Sherpa" },
+  { id: "training-deck", label: "Training Deck" },
   { id: "before-you-start", label: "What You Need Before You Start" },
   { id: "installing-zoom", label: "Installing Zoom" },
   { id: "claiming-host", label: "Claiming Host with the Host Key" },
@@ -505,9 +511,70 @@ export default function SherpaGuidePage() {
             </li>
           </Box>
           <Callout>
-            New volunteers: read this entire guide once before your first shift, then keep it open
-            on a second device or a printout during the meeting.
+            New volunteers: watch the{" "}
+            <Box component="a" href="#training-deck" sx={{ color: "#ff6b35", fontWeight: 700 }}>
+              training deck
+            </Box>{" "}
+            below, read this entire guide once before your first shift, then keep it open on a
+            second device or a printout during the meeting.
           </Callout>
+        </motion.div>
+
+        <motion.div {...sectionMotion}>
+          <SectionTitle id="training-deck" icon={<SlideshowIcon fontSize="small" />}>
+            Training Deck
+          </SectionTitle>
+          <Typography sx={{ color: "rgba(0,0,0,0.72)", lineHeight: 1.75, mb: 2, fontSize: "1.02rem" }}>
+            The Sunrise Semester Sherpa Training slide deck (v3.0) — same material as this written
+            guide, in presentation form. Use the arrows to step through, or open it full-screen.
+          </Typography>
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              aspectRatio: "16 / 9",
+              borderRadius: 2,
+              overflow: "hidden",
+              border: "1px solid rgba(0,0,0,0.08)",
+              boxShadow: "0 12px 40px rgba(26,26,46,0.08)",
+              bgcolor: "#1a1a2e",
+              mb: 2,
+            }}
+          >
+            <Box
+              component="iframe"
+              title="Sunrise Semester Sherpa Training deck"
+              src={TRAINING_DECK_EMBED}
+              allowFullScreen
+              sx={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                border: 0,
+              }}
+            />
+          </Box>
+          <Button
+            href={TRAINING_DECK_PUB}
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="outlined"
+            startIcon={<SlideshowIcon />}
+            sx={{
+              mb: 5,
+              borderColor: "rgba(255,107,53,0.45)",
+              color: "#ff6b35",
+              fontWeight: 700,
+              textTransform: "none",
+              "&:hover": {
+                borderColor: "#ff6b35",
+                bgcolor: "rgba(255,107,53,0.06)",
+              },
+            }}
+          >
+            Open deck in a new tab
+          </Button>
         </motion.div>
 
         <motion.div {...sectionMotion}>
