@@ -764,7 +764,7 @@ export default function BusinessMeetingForm({ initial, mode }) {
               value={sched.title}
               onChange={(e) => updateSchedule(schedIndex, { title: e.target.value })}
             />
-            <Stack direction="row" spacing={1} flexWrap="wrap">
+            <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
               <Button size="small" startIcon={<AddIcon />} onClick={() => addScheduleColumn(schedIndex)}>
                 Add column
               </Button>

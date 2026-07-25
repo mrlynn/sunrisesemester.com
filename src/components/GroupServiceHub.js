@@ -20,7 +20,7 @@ function SectionNav() {
     { href: "#minutes", label: "Meeting minutes" },
   ];
   return (
-    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 4 }}>
+    <Stack direction="row" spacing={1} useFlexGap sx={{ mb: 4, flexWrap: "wrap" }}>
       {items.map((item) => (
         <Chip
           key={item.href}

@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
@@ -34,12 +33,8 @@ export default async function BusinessMeetingDetailPage({ params }) {
     <Box sx={{ bgcolor: "#faf8f6", minHeight: "60vh", py: { xs: 4, md: 6 } }}>
       <Container maxWidth="md">
         <Stack spacing={3}>
-          <Button
-            component={Link}
-            href="/business-meetings"
-            size="small"
-            sx={{ alignSelf: "flex-start" }}
-          >
+          {/* href (not component={Link}): Server Components cannot pass function props into client MUI */}
+          <Button href="/business-meetings" size="small" sx={{ alignSelf: "flex-start" }}>
             ← Group service hub
           </Button>
           <BusinessMeetingMinutes meeting={meeting} />
