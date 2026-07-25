@@ -20,7 +20,8 @@
       "Bash(pip3 install *)",
       "Bash(python3 -c \"import defusedxml, PIL, lxml; print\\('ok'\\)\")",
       "Bash(mdfind \"kMDItemKind == 'Application'\")",
-      "Bash(brew list *)"
+      "Bash(brew list *)",
+      "Bash(cp \"/private/tmp/claude-501/-Users-michael-lynn-code-sunrisesemester-com/2f33d887-d226-463d-9bea-635db9e9830a/scratchpad/sherpa-deck/Sunrise Semester Sherpa Training - v3.0.pptx\" \"/Users/michael.lynn/Downloads/Sunrise Semester Sherpa Training - v3.0.pptx\" *)"
     ]
   },
   "enableAllProjectMcpServers": true,

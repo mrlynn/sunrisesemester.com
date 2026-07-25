@@ -39,13 +39,12 @@ const EventSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-EventSchema.pre("validate", function preValidate(next) {
+EventSchema.pre("validate", function preValidate() {
   if (!this.slug && this.title) {
     this.slug = slugify(this.title);
   } else if (this.slug) {
     this.slug = slugify(this.slug);
   }
-  next();
 });
 
 export default mongoose.models.Event || mongoose.model("Event", EventSchema);

@@ -64,6 +64,12 @@ export const ADMIN_NAV = [
     roles: ["admin", "editor"],
   },
   {
+    href: "/admin/announcement",
+    label: "Announcement",
+    group: "content",
+    roles: ["admin", "editor"],
+  },
+  {
     href: "/admin/stories",
     label: "Stories",
     group: "content",
