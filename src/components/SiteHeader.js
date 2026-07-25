@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -9,136 +10,330 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import ListSubheader from "@mui/material/ListSubheader";
 import Divider from "@mui/material/Divider";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MemberAccountButton from "@/components/MemberAccountButton";
+import {
+  SITE_NAV_GROUPS,
+  SITE_NAV_MORE,
+  SITE_NAV_PRIMARY,
+  isSiteNavActive,
+} from "@/lib/siteNav";
 
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/newcomer", label: "Newcomer" },
-  { href: "/meetings", label: "Meetings" },
-  { href: "/reflections", label: "Reflections" },
-  { href: "/stories", label: "Stories" },
-  { href: "/literature", label: "Literature" },
-  // { href: "/our-group", label: "Our Group" },
-  { href: "/events", label: "Events" },
-  { href: "/business-meetings", label: "Group service" },
-  { href: "/resources", label: "Resources" },
-];
+function NavLinkButton({ item, pathname }) {
+  const active = isSiteNavActive(pathname, item.href);
+  const emphasis = Boolean(item.emphasis);
+
+  if (emphasis) {
+    return (
+      <Button
+        component={Link}
+        href={item.href}
+        variant="contained"
+        size="small"
+        sx={{
+          textTransform: "none",
+          fontWeight: 700,
+          px: 2,
+          background: active
+            ? "linear-gradient(135deg, #ff5a1f 0%, #ff6b35 100%)"
+            : "linear-gradient(135deg, #ff6b35 0%, #ff8c5a 100%)",
+          boxShadow: "none",
+          "&:hover": {
+            background: "linear-gradient(135deg, #ff5a1f 0%, #ff7a45 100%)",
+            boxShadow: "0 4px 14px rgba(255,107,53,0.35)",
+          },
+        }}
+      >
+        {item.label}
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      component={Link}
+      href={item.href}
+      variant="text"
+      sx={{
+        color: active ? "#ff6b35" : "#555555",
+        fontWeight: active ? 700 : 600,
+        px: 1.25,
+        minWidth: 0,
+        fontSize: "0.925rem",
+        textTransform: "none",
+        borderBottom: active ? "2px solid #ff6b35" : "2px solid transparent",
+        borderRadius: 0,
+        "&:hover": {
+          color: "#ff6b35",
+          backgroundColor: "transparent",
+        },
+      }}
+    >
+      {item.label}
+    </Button>
+  );
+}
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const [open, setOpen] = React.useState(false);
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [moreAnchor, setMoreAnchor] = React.useState(null);
+  const moreOpen = Boolean(moreAnchor);
+  const moreActive = SITE_NAV_MORE.some((item) => isSiteNavActive(pathname, item.href));
 
   return (
-    <AppBar position="sticky" color="default" elevation={0}>
+    <AppBar
+      position="sticky"
+      color="default"
+      elevation={0}
+      sx={{ borderBottom: "1px solid #eeeeee", bgcolor: "rgba(255,255,255,0.96)", backdropFilter: "blur(8px)" }}
+    >
       <Toolbar
         sx={{
-          gap: 3,
-          py: 1.5,
+          gap: { xs: 1, md: 2 },
+          py: 1.25,
           px: { xs: 2, md: 3 },
+          minHeight: { xs: 56, md: 64 },
         }}
       >
         <Typography
           variant="h6"
-          component="a"
+          component={Link}
           href="/"
           sx={{
-            flexGrow: { xs: 1, md: 0 },
+            flexGrow: { xs: 1, lg: 0 },
             fontWeight: 700,
             color: "#2c2c2c",
             textDecoration: "none",
-            fontSize: "1.2rem",
+            fontSize: { xs: "1.05rem", md: "1.15rem" },
             letterSpacing: "-0.01em",
+            fontFamily: "var(--font-serif), Georgia, serif",
             transition: "color 0.2s ease",
-            "&:hover": {
-              color: "#ff6b35",
-            },
+            "&:hover": { color: "#ff6b35" },
           }}
         >
           Sunrise Semester
         </Typography>
-        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2, ml: 3 }}>
-          {links.map((item) => (
-            <Button
-              key={item.href}
-              component="a"
-              href={item.href}
-              variant="text"
-              sx={{
-                color: pathname === item.href ? "#ff6b35" : "#666666",
-                fontWeight: 600,
-                padding: "8px 12px",
-                fontSize: "0.95rem",
-                borderBottom: pathname === item.href ? "2px solid #ff6b35" : "2px solid transparent",
-                transition: "all 0.2s ease",
-                "&:hover": {
-                  color: "#ff6b35",
-                  backgroundColor: "transparent",
-                },
-              }}
-            >
-              {item.label}
-            </Button>
+
+        <Box
+          component="nav"
+          aria-label="Primary"
+          sx={{
+            display: { xs: "none", lg: "flex" },
+            alignItems: "center",
+            gap: 0.5,
+            ml: 2,
+            flexGrow: 1,
+          }}
+        >
+          {SITE_NAV_PRIMARY.map((item) => (
+            <NavLinkButton key={item.href} item={item} pathname={pathname} />
           ))}
+
+          <Button
+            id="site-nav-more-button"
+            aria-controls={moreOpen ? "site-nav-more-menu" : undefined}
+            aria-haspopup="true"
+            aria-expanded={moreOpen ? "true" : undefined}
+            onClick={(e) => setMoreAnchor(e.currentTarget)}
+            endIcon={<ExpandMoreIcon sx={{ fontSize: 18 }} />}
+            sx={{
+              color: moreActive || moreOpen ? "#ff6b35" : "#555555",
+              fontWeight: moreActive ? 700 : 600,
+              px: 1.25,
+              minWidth: 0,
+              fontSize: "0.925rem",
+              textTransform: "none",
+              borderBottom:
+                moreActive || moreOpen ? "2px solid #ff6b35" : "2px solid transparent",
+              borderRadius: 0,
+              "&:hover": {
+                color: "#ff6b35",
+                backgroundColor: "transparent",
+              },
+            }}
+          >
+            More
+          </Button>
+          <Menu
+            id="site-nav-more-menu"
+            anchorEl={moreAnchor}
+            open={moreOpen}
+            onClose={() => setMoreAnchor(null)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+            transformOrigin={{ vertical: "top", horizontal: "left" }}
+            slotProps={{
+              list: { "aria-labelledby": "site-nav-more-button" },
+              paper: {
+                sx: {
+                  mt: 1,
+                  minWidth: 200,
+                  borderRadius: 2,
+                  border: "1px solid #eeeeee",
+                  boxShadow: "0 12px 32px rgba(0,0,0,0.08)",
+                },
+              },
+            }}
+          >
+            {SITE_NAV_MORE.map((item) => {
+              const active = isSiteNavActive(pathname, item.href);
+              return (
+                <MenuItem
+                  key={item.href}
+                  component={Link}
+                  href={item.href}
+                  selected={active}
+                  onClick={() => setMoreAnchor(null)}
+                  sx={{
+                    fontWeight: active ? 700 : 500,
+                    fontSize: "0.925rem",
+                    py: 1.25,
+                    "&.Mui-selected": {
+                      bgcolor: "rgba(255,107,53,0.1)",
+                      color: "#ff6b35",
+                    },
+                  }}
+                >
+                  {item.label}
+                </MenuItem>
+              );
+            })}
+          </Menu>
         </Box>
-        <Box sx={{ flexGrow: 1 }} />
+
+        <Box sx={{ display: { xs: "none", lg: "flex" }, alignItems: "center", ml: "auto" }}>
+          <MemberAccountButton />
+        </Box>
+
+        {/* Tablet: Meetings CTA + menu (full primary is lg+) */}
+        <Box sx={{ display: { xs: "none", md: "flex", lg: "none" }, alignItems: "center", gap: 1, ml: "auto" }}>
+          <Button
+            component={Link}
+            href="/meetings"
+            variant="contained"
+            size="small"
+            sx={{
+              textTransform: "none",
+              fontWeight: 700,
+              background: "linear-gradient(135deg, #ff6b35 0%, #ff8c5a 100%)",
+              boxShadow: "none",
+            }}
+          >
+            Meetings
+          </Button>
+          <MemberAccountButton />
+        </Box>
+
         <IconButton
           color="inherit"
           edge="end"
-          onClick={() => setOpen(true)}
+          onClick={() => setDrawerOpen(true)}
           sx={{
-            display: { xs: "inline-flex", md: "none" },
+            display: { lg: "none" },
             color: "#2c2c2c",
+            ml: { xs: 0, md: 0.5 },
           }}
           aria-label="Open menu"
         >
           <MenuIcon />
         </IconButton>
       </Toolbar>
-      <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
-        <Box sx={{ width: 280, pt: 2 }} role="presentation">
-          <Typography
-            sx={{
-              px: 2,
-              pb: 2,
-              fontWeight: 700,
-              fontSize: "1.1rem",
-              color: "#2c2c2c",
-            }}
-          >
-            Menu
-          </Typography>
+
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        slotProps={{
+          paper: {
+            sx: { width: { xs: "min(100vw, 320px)", sm: 320 } },
+          },
+        }}
+      >
+        <Box sx={{ pt: 2, pb: 3, height: "100%", display: "flex", flexDirection: "column" }} role="presentation">
+          <Box sx={{ px: 2.5, pb: 2 }}>
+            <Typography
+              sx={{
+                fontWeight: 800,
+                fontSize: "1.15rem",
+                color: "#2c2c2c",
+                fontFamily: "var(--font-serif), Georgia, serif",
+              }}
+            >
+              Sunrise Semester
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Find a meeting, read, and connect with the group.
+            </Typography>
+          </Box>
           <Divider />
-          <List>
-            {links.map((item) => (
-              <ListItemButton
-                key={item.href}
-                component="a"
-                href={item.href}
-                selected={pathname === item.href}
-                onClick={() => setOpen(false)}
-                sx={{
-                  py: 1.5,
-                  "&.Mui-selected": {
-                    backgroundColor: "rgba(255, 107, 53, 0.1)",
-                    color: "#ff6b35",
-                    fontWeight: 700,
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 107, 53, 0.15)",
-                    },
-                  },
-                  "&:hover": {
-                    backgroundColor: "#f5f5f5",
-                  },
-                }}
+
+          <Box sx={{ flex: 1, overflowY: "auto", py: 1 }}>
+            {SITE_NAV_GROUPS.map((group) => (
+              <List
+                key={group.id}
+                dense
+                subheader={
+                  <ListSubheader
+                    component="div"
+                    sx={{
+                      bgcolor: "transparent",
+                      lineHeight: 2.4,
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                      color: "text.secondary",
+                    }}
+                  >
+                    {group.label}
+                  </ListSubheader>
+                }
               >
-                <ListItemText primary={item.label} />
-              </ListItemButton>
+                {group.items.map((item) => {
+                  const active = isSiteNavActive(pathname, item.href);
+                  return (
+                    <ListItemButton
+                      key={item.href}
+                      component={Link}
+                      href={item.href}
+                      selected={active}
+                      onClick={() => setDrawerOpen(false)}
+                      sx={{
+                        mx: 1,
+                        borderRadius: 1.5,
+                        py: 1.15,
+                        "&.Mui-selected": {
+                          backgroundColor: "rgba(255, 107, 53, 0.1)",
+                          color: "#ff6b35",
+                          "&:hover": { backgroundColor: "rgba(255, 107, 53, 0.15)" },
+                        },
+                      }}
+                    >
+                      <ListItemText
+                        primary={item.label}
+                        slotProps={{
+                          primary: { fontWeight: active ? 700 : 600 },
+                        }}
+                      />
+                    </ListItemButton>
+                  );
+                })}
+              </List>
             ))}
-          </List>
+          </Box>
+
+          <Divider />
+          <Box sx={{ pt: 1.5 }}>
+            <MemberAccountButton mobile onNavigate={() => setDrawerOpen(false)} />
+          </Box>
         </Box>
       </Drawer>
     </AppBar>

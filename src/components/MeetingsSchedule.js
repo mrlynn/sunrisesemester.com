@@ -33,11 +33,11 @@ const meetings = [
     accent: "#ff6b35",
     days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
     formats: [
-      { label: "Mon", url: "https://drive.google.com/file/d/1UZ_xSVDqSIQ3mWrug9KSZogURJJ_250x/view?usp=drive_link" },
-      { label: "Tue", url: "https://drive.google.com/file/d/1mlSNb3fLyoWek9emoushf3Lmy1tH3C_h/view?usp=drive_link" },
-      { label: "Wed", url: "https://drive.google.com/file/d/15N-YdxwgeexTyZZbapZHdLaOG98QGb60/view?usp=drive_link" },
-      { label: "Thu", url: "https://drive.google.com/file/d/1GUy_uNLrzMv9O4quAfAQzc5ktD8cK2kl/view?usp=drive_link" },
-      { label: "Fri", url: "https://drive.google.com/file/d/1JlBJV8x2rDGA7eYnJwPI_BVZYNvd0eFL/view?usp=drive_link" },
+      { label: "Mon", key: "weekday-mon" },
+      { label: "Tue", key: "weekday-tue" },
+      { label: "Wed", key: "weekday-wed" },
+      { label: "Thu", key: "weekday-thu" },
+      { label: "Fri", key: "weekday-fri" },
     ],
   },
   {
@@ -51,7 +51,7 @@ const meetings = [
     accent: "#c43c68",
     days: ["Sat"],
     formats: [
-      { label: "View Format", url: "https://drive.google.com/file/d/1VbKkUJUL0yGkBlHsPULRulqh_GV1SWyd/view?usp=drive_link" },
+      { label: "View Format", key: "saturday-men" },
     ],
   },
   {
@@ -76,10 +76,19 @@ const meetings = [
     accent: "#ff8555",
     days: ["Sun"],
     formats: [
-      { label: "View Format", url: "https://drive.google.com/file/d/1pMAsv2nX17U_fvyrXWX1Tgz4gBBgVGFS/view?usp=drive_link" },
+      { label: "View Format", key: "sunday" },
     ],
   },
 ];
+
+function formatHref(format, formatUrls) {
+  const url = formatUrls?.[format.key];
+  return url || "/resources#meeting-formats";
+}
+
+function isExternalHref(href) {
+  return typeof href === "string" && /^https?:\/\//i.test(href);
+}
 
 function useCopy() {
   const [copied, setCopied] = React.useState(false);
@@ -370,7 +379,7 @@ function ZoomCard({ onCopy, copied }) {
   );
 }
 
-function MeetingCard({ meeting, index }) {
+function MeetingCard({ meeting, index, formatUrls }) {
   const isWeekday = meeting.id === "weekdays";
 
   return (
@@ -514,36 +523,40 @@ function MeetingCard({ meeting, index }) {
                   Meeting Formats
                 </Typography>
               </Stack>
-              {meeting.formats.map((f) => (
-                <Button
-                  key={f.label}
-                  href={f.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  variant="contained"
-                  fullWidth
-                  startIcon={<ArticleIcon />}
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: 700,
-                    fontSize: "0.9rem",
-                    justifyContent: "flex-start",
-                    borderRadius: 2,
-                    py: 1,
-                    px: 2,
-                    background: "rgba(255,107,53,0.07)",
-                    color: "#1d1d1d",
-                    boxShadow: "none",
-                    "&:hover": {
-                      background: meeting.gradient,
-                      color: "#ffffff",
-                      boxShadow: "0 4px 16px rgba(255,107,53,0.3)",
-                    },
-                  }}
-                >
-                  {f.label} Format
-                </Button>
-              ))}
+              {meeting.formats.map((f) => {
+                const href = formatHref(f, formatUrls);
+                const external = isExternalHref(href);
+                return (
+                  <Button
+                    key={f.key || f.label}
+                    href={href}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
+                    variant="contained"
+                    fullWidth
+                    startIcon={<ArticleIcon />}
+                    sx={{
+                      textTransform: "none",
+                      fontWeight: 700,
+                      fontSize: "0.9rem",
+                      justifyContent: "flex-start",
+                      borderRadius: 2,
+                      py: 1,
+                      px: 2,
+                      background: "rgba(255,107,53,0.07)",
+                      color: "#1d1d1d",
+                      boxShadow: "none",
+                      "&:hover": {
+                        background: meeting.gradient,
+                        color: "#ffffff",
+                        boxShadow: "0 4px 16px rgba(255,107,53,0.3)",
+                      },
+                    }}
+                  >
+                    {f.label} Format
+                  </Button>
+                );
+              })}
             </Box>
           </Stack>
         ) : (
@@ -611,34 +624,38 @@ function MeetingCard({ meeting, index }) {
               </Typography>
               {meeting.formats && (
                 <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", pt: 1.5 }}>
-                  {meeting.formats.map((f) => (
-                    <Button
-                      key={f.label}
-                      href={f.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      size="small"
-                      startIcon={<ArticleIcon />}
-                      sx={{
-                        textTransform: "none",
-                        fontWeight: 600,
-                        fontSize: "0.85rem",
-                        color: meeting.accent,
-                        border: "1.5px solid",
-                        borderColor: meeting.accent,
-                        borderRadius: 6,
-                        px: 2,
-                        py: 0.75,
-                        "&:hover": {
-                          background: meeting.accent,
-                          color: "#ffffff",
+                  {meeting.formats.map((f) => {
+                    const href = formatHref(f, formatUrls);
+                    const external = isExternalHref(href);
+                    return (
+                      <Button
+                        key={f.key || f.label}
+                        href={href}
+                        target={external ? "_blank" : undefined}
+                        rel={external ? "noopener noreferrer" : undefined}
+                        size="small"
+                        startIcon={<ArticleIcon />}
+                        sx={{
+                          textTransform: "none",
+                          fontWeight: 600,
+                          fontSize: "0.85rem",
+                          color: meeting.accent,
+                          border: "1.5px solid",
                           borderColor: meeting.accent,
-                        },
-                      }}
-                    >
-                      {f.label}
-                    </Button>
-                  ))}
+                          borderRadius: 6,
+                          px: 2,
+                          py: 0.75,
+                          "&:hover": {
+                            background: meeting.accent,
+                            color: "#ffffff",
+                            borderColor: meeting.accent,
+                          },
+                        }}
+                      >
+                        {f.label}
+                      </Button>
+                    );
+                  })}
                 </Stack>
               )}
             </Box>
@@ -649,7 +666,7 @@ function MeetingCard({ meeting, index }) {
   );
 }
 
-export default function MeetingsSchedule({ weeklyService }) {
+export default function MeetingsSchedule({ weeklyService, formatUrls = {} }) {
   const { copied, copy, reset } = useCopy();
 
   return (
@@ -715,7 +732,7 @@ export default function MeetingsSchedule({ weeklyService }) {
                   key={m.id}
                   sx={m.id === "weekdays" ? { gridColumn: { md: "1 / -1" } } : {}}
                 >
-                  <MeetingCard meeting={m} index={i} />
+                  <MeetingCard meeting={m} index={i} formatUrls={formatUrls} />
                 </Box>
               ))}
             </Box>

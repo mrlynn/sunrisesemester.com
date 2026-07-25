@@ -149,9 +149,14 @@ export default function MemberSettingsForm() {
               >
                 My group profile
               </Typography>
-              <Button type="button" variant="outlined" onClick={logout} size="small">
-                Sign out
-              </Button>
+              <Stack direction="row" spacing={1}>
+                <Button type="button" variant="text" onClick={() => router.push("/member")} size="small">
+                  Account home
+                </Button>
+                <Button type="button" variant="outlined" onClick={logout} size="small">
+                  Sign out
+                </Button>
+              </Stack>
             </Stack>
 
             <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>

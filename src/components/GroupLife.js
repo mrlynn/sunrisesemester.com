@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { motion } from "motion/react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
 import CakeOutlinedIcon from "@mui/icons-material/CakeOutlined";
 import MailOutlineIcon from "@mui/icons-material/MailOutlined";
 import WorkspacePremiumIcon from "@mui/icons-material/WorkspacePremium";
@@ -405,11 +407,37 @@ export default function GroupLife({ anniversaries, serviceRoles }) {
                 maxWidth: 560,
                 mx: "auto",
                 color: "#4a3560",
-                mb: 6,
+                mb: 3,
               }}
             >
               A day at a time. Every one of these is a small miracle.
             </Typography>
+
+            <Box
+              sx={{
+                maxWidth: 560,
+                mx: "auto",
+                mb: 6,
+                p: 2.5,
+                borderRadius: 3,
+                bgcolor: "rgba(255,255,255,0.85)",
+                border: "1px solid rgba(255,107,53,0.25)",
+                textAlign: "center",
+              }}
+            >
+              <Typography sx={{ color: "#4a3560", fontSize: "0.98rem", lineHeight: 1.65, mb: 2 }}>
+                Home group members can add their anniversary and contact details with a free
+                account. No sign-in is required to browse this page.
+              </Typography>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ justifyContent: "center" }}>
+                <Button component={Link} href="/member/register" variant="contained" size="small">
+                  Register
+                </Button>
+                <Button component={Link} href="/member" variant="outlined" size="small">
+                  Member account
+                </Button>
+              </Stack>
+            </Box>
 
             {anniversaries.length === 0 ? (
               <Typography

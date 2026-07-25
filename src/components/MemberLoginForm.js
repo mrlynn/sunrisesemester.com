@@ -61,6 +61,7 @@ export default function MemberLoginForm() {
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
               Sign in to update your group profile, contact details, and anniversary settings.
+              You can browse the whole site without an account.
             </Typography>
             {error ? <Alert severity="error">{error}</Alert> : null}
             <TextField
@@ -90,6 +91,10 @@ export default function MemberLoginForm() {
               New here?{" "}
               <Link href="/member/register" style={{ color: "#ff6b35", fontWeight: 600 }}>
                 Create an account
+              </Link>
+              {" · "}
+              <Link href="/member" style={{ color: "#ff6b35", fontWeight: 600 }}>
+                Member account home
               </Link>
             </Typography>
           </Stack>

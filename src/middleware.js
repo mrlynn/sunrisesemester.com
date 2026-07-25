@@ -7,7 +7,8 @@ import { canAccessAdminPath, defaultAdminPath, isRole } from "./lib/roles";
 const STATIC_ASSET_PATH =
   /\.(?:woff2?|ttf|otf|eot|png|jpe?g|gif|webp|svg|ico|css|js|map)$/i;
 
-const MEMBER_PUBLIC_PATHS = new Set(["/member/login", "/member/register"]);
+const MEMBER_PUBLIC_PATHS = new Set(["/member", "/member/login", "/member/register"]);
+const MEMBER_PROTECTED_PATHS = ["/member/settings"];
 
 function redirectToAdminLogin(request) {
   const res = NextResponse.redirect(new URL("/admin", request.url));
@@ -41,6 +42,12 @@ export async function middleware(request) {
 
   if (pathname.startsWith("/member")) {
     if (MEMBER_PUBLIC_PATHS.has(pathname)) {
+      return NextResponse.next();
+    }
+    const needsAuth = MEMBER_PROTECTED_PATHS.some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
+    );
+    if (!needsAuth) {
       return NextResponse.next();
     }
     const memberToken = request.cookies.get(MEMBER_COOKIE_NAME)?.value;
