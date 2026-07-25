@@ -4,7 +4,7 @@
 
 export const SITE_NAV_PRIMARY = [
   { href: "/meetings", label: "Meetings", emphasis: true },
-  { href: "/newcomer", label: "Newcomer" },
+  { href: "/newcomer", label: "Newcomer", accent: "outline" },
   { href: "/stories", label: "Stories" },
   { href: "/resources", label: "Resources" },
   { href: "/our-group", label: "Our group" },
@@ -15,6 +15,8 @@ export const SITE_NAV_MORE = [
   { href: "/literature", label: "Literature" },
   { href: "/events", label: "Events" },
   { href: "/business-meetings", label: "Group service" },
+  { href: "/servant-roles", label: "Servant roles" },
+  { href: "/share-your-story", label: "Share your story" },
   { href: "/report", label: "Report a concern" },
 ];
 
@@ -34,6 +36,7 @@ export const SITE_NAV_GROUPS = [
     label: "Read & reflect",
     items: [
       { href: "/stories", label: "Stories" },
+      { href: "/share-your-story", label: "Share your story" },
       { href: "/reflections", label: "Reflections" },
       { href: "/literature", label: "Literature" },
       { href: "/resources", label: "Resources" },
@@ -45,6 +48,7 @@ export const SITE_NAV_GROUPS = [
     items: [
       { href: "/our-group", label: "Our group" },
       { href: "/business-meetings", label: "Group service" },
+      { href: "/servant-roles", label: "Servant roles" },
       { href: "/report", label: "Report a concern" },
       { href: "/subscribe", label: "Email updates" },
     ],

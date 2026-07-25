@@ -15,6 +15,13 @@ import { formatEventDate } from "@/lib/eventDates";
 
 export const dynamic = "force-dynamic";
 
+// Title/description/OG are already set well by the root layout's defaults —
+// only add the canonical URL here to avoid duplicating (and mismatching)
+// them via the title template.
+export const metadata = {
+  alternates: { canonical: "/" },
+};
+
 export default async function HomePage() {
   const landing = await getLanding();
   const now = new Date();

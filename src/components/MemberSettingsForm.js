@@ -161,7 +161,9 @@ export default function MemberSettingsForm() {
 
             <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
               Update your contact details and sobriety anniversary. For each field, choose
-              whether it appears on the public site or is visible only to group editors.
+              whether it appears on the public site, or stays visible only to the small
+              number of officers who manage the site (General Chair, Secretary, and other
+              editors) — never to the public.
             </Typography>
 
             {message ? <Alert severity="success">{message}</Alert> : null}

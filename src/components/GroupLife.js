@@ -330,10 +330,27 @@ export default function GroupLife({ anniversaries, serviceRoles }) {
                 color: "#2d1b4e",
                 textAlign: "center",
                 fontFamily: 'var(--font-serif), Georgia, serif',
-                mb: 6,
+                mb: 2,
               }}
             >
               Service roster
+            </Typography>
+            <Typography
+              sx={{
+                textAlign: "center",
+                color: "#6b5478",
+                mb: 6,
+                fontSize: "0.98rem",
+              }}
+            >
+              Curious what each role involves? See{" "}
+              <Link
+                href="/servant-roles"
+                style={{ color: "#ff6b35", fontWeight: 600 }}
+              >
+                servant roles
+              </Link>
+              .
             </Typography>
 
             {serviceRoles.length === 0 ? (

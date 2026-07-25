@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 function HeaderBanner() {
@@ -132,12 +133,38 @@ function HeaderBanner() {
               fontSize: { xs: "1.05rem", md: "1.25rem" },
               color: "rgba(255,255,255,0.92)",
               maxWidth: 620,
+              mb: 4,
               textShadow: "0 2px 12px rgba(0,0,0,0.35)",
             }}
           >
             Reflections from members of Sunrise Semester. One share can change everything —
             start with one.
           </Typography>
+          <Button
+            component={Link}
+            href="/share-your-story"
+            variant="outlined"
+            size="large"
+            endIcon={<ArrowForwardIcon />}
+            sx={{
+              py: 1.25,
+              px: 3.5,
+              borderRadius: 8,
+              fontWeight: 700,
+              fontSize: "0.95rem",
+              textTransform: "none",
+              color: "#ffffff",
+              borderColor: "rgba(255,255,255,0.5)",
+              borderWidth: "2px",
+              "&:hover": {
+                borderColor: "#ffffff",
+                borderWidth: "2px",
+                backgroundColor: "rgba(255,255,255,0.1)",
+              },
+            }}
+          >
+            Share your story
+          </Button>
         </motion.div>
       </Container>
     </Box>
@@ -328,10 +355,29 @@ function EmptyState() {
         >
           No stories yet — but yours could be first.
         </Typography>
-        <Typography sx={{ color: "#666666", maxWidth: 520, mx: "auto" }}>
-          Once your database is connected, sign in as an editor to publish member
-          reflections here.
+        <Typography sx={{ color: "#666666", maxWidth: 520, mx: "auto", mb: 3 }}>
+          An article, a photo, a recording — whatever form it takes, someone out there needs
+          to hear it.
         </Typography>
+        <Button
+          component={Link}
+          href="/share-your-story"
+          variant="contained"
+          endIcon={<ArrowForwardIcon />}
+          sx={{
+            textTransform: "none",
+            fontWeight: 700,
+            borderRadius: 8,
+            px: 3.5,
+            py: 1.25,
+            background: "linear-gradient(135deg, #ff6b35 0%, #ffa751 100%)",
+            "&:hover": {
+              background: "linear-gradient(135deg, #ef5e2a 0%, #f3924a 100%)",
+            },
+          }}
+        >
+          Share your story
+        </Button>
       </Box>
     </motion.div>
   );

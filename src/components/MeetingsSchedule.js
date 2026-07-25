@@ -16,70 +16,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import ArticleIcon from "@mui/icons-material/Article";
 import Link from "next/link";
 import WeeklyServiceSection from "@/components/WeeklyServiceSection";
-
-const ZOOM_ID = "901964988";
-const ZOOM_URL =
-  "https://us02web.zoom.us/j/901964988?pwd=QkhEY1FFOUF2b1AzMmRwZ0VtejdVQT09";
-
-const meetings = [
-  {
-    id: "weekdays",
-    label: "Monday – Friday",
-    shortLabel: "M–F",
-    title: "Daily Sunrise",
-    time: "7:15 – 8:15 AM",
-    blurb: "Start every weekday in fellowship. One hour of open discussion to set the tone of the day.",
-    gradient: "linear-gradient(135deg, #ff6b35 0%, #ffa751 60%, #ffd89b 100%)",
-    accent: "#ff6b35",
-    days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-    formats: [
-      { label: "Mon", key: "weekday-mon" },
-      { label: "Tue", key: "weekday-tue" },
-      { label: "Wed", key: "weekday-wed" },
-      { label: "Thu", key: "weekday-thu" },
-      { label: "Fri", key: "weekday-fri" },
-    ],
-  },
-  {
-    id: "saturday-men",
-    label: "Saturday",
-    shortLabel: "Sat",
-    title: "Men's Meeting",
-    time: "8:00 – 9:15 AM",
-    blurb: "Men of the group gather to share experience, strength, and hope.",
-    gradient: "linear-gradient(135deg, #5b2c6f 0%, #c43c68 60%, #ff6b35 100%)",
-    accent: "#c43c68",
-    days: ["Sat"],
-    formats: [
-      { label: "View Format", key: "saturday-men" },
-    ],
-  },
-  {
-    id: "saturday-women",
-    label: "Saturday",
-    shortLabel: "Sat",
-    title: "Women's Meeting",
-    time: "9:30 AM",
-    blurb: "Women of the group meet immediately after the men's meeting.",
-    gradient: "linear-gradient(135deg, #2d1b4e 0%, #5b2c6f 50%, #c43c68 100%)",
-    accent: "#5b2c6f",
-    days: ["Sat"],
-  },
-  {
-    id: "sunday",
-    label: "Sunday",
-    shortLabel: "Sun",
-    title: "Sunday Morning",
-    time: "8:00 – 9:00 AM",
-    blurb: "Close the week the way we started it — together, in the light.",
-    gradient: "linear-gradient(135deg, #c43c68 0%, #ff6b35 50%, #ffa751 100%)",
-    accent: "#ff8555",
-    days: ["Sun"],
-    formats: [
-      { label: "View Format", key: "sunday" },
-    ],
-  },
-];
+import { ZOOM_ID, ZOOM_URL, meetings } from "@/lib/meetingsSchedule";
 
 function formatHref(format, formatUrls) {
   const url = formatUrls?.[format.key];
@@ -319,7 +256,7 @@ function ZoomCard({ onCopy, copied }) {
                 textShadow: "0 2px 20px rgba(0,0,0,0.3)",
               }}
             >
-              917 964 988
+              {ZOOM_ID.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}
             </Typography>
           </Box>
           <Stack spacing={1.5} sx={{ width: { xs: "100%", md: "auto" } }}>

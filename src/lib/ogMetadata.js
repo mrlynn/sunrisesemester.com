@@ -19,6 +19,7 @@ export function pageSocialMetadata({
   return {
     title,
     description: desc,
+    ...(path ? { alternates: { canonical: path } } : {}),
     openGraph: {
       title,
       description: desc,

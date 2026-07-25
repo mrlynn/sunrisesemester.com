@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import EventDetail from "@/components/EventDetail";
 import { getEventBySlug, listEventAttendees, getEventCoordination } from "@/lib/events";
 import { pageSocialMetadata } from "@/lib/ogMetadata";
+import { buildEventJsonLd, JsonLd } from "@/lib/structuredData";
 
 export const dynamic = "force-dynamic";
 
@@ -48,10 +49,13 @@ export default async function EventDetailRoute({ params }) {
     coordinationEnabled: Boolean(raw.coordinationEnabled),
   };
   return (
-    <EventDetail
-      event={event}
-      initialAttendees={initialAttendees}
-      initialCoordination={initialCoordination}
-    />
+    <>
+      {event.slug ? <JsonLd data={buildEventJsonLd(event)} /> : null}
+      <EventDetail
+        event={event}
+        initialAttendees={initialAttendees}
+        initialCoordination={initialCoordination}
+      />
+    </>
   );
 }

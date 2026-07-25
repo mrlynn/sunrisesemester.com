@@ -81,6 +81,10 @@ export default function MemberRegisterForm() {
                 autoComplete="family-name"
               />
             </Stack>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: -1.5 }}>
+              This stays private by default. Once you&rsquo;re signed in, Settings lets you choose
+              — field by field — what&rsquo;s public and what stays visible only to the group.
+            </Typography>
             <TextField
               name="email"
               label="Email"

@@ -1,6 +1,7 @@
 import { Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import AppProviders from "@/components/AppProviders";
+import { SITE_URL } from "@/lib/siteUrl";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,9 +23,7 @@ export const metadata = {
   },
   description:
     "Meeting information, stories, and resources for the Sunrise Semester home group of Alcoholics Anonymous.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || "https://www.sunrisesemester.com"
-  ),
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     type: "website",
     siteName: "Sunrise Semester",

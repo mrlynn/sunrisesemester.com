@@ -8,6 +8,7 @@ import {
   formatMeetingDateLabel,
   getPublishedBusinessMeetingBySlug,
 } from "@/lib/businessMeetings";
+import { pageSocialMetadata } from "@/lib/ogMetadata";
 
 export const dynamic = "force-dynamic";
 
@@ -18,10 +19,11 @@ export async function generateMetadata({ params }) {
     return { title: "Minutes not found" };
   }
   const label = formatMeetingDateLabel(meeting.meetingDate);
-  return {
-    title: `${label} business meeting — Sunrise Semester`,
+  return pageSocialMetadata({
+    title: `${label} business meeting`,
     description: `Business meeting minutes for ${label}, Sunrise Semester home group.`,
-  };
+    path: meeting.slug ? `/business-meetings/${meeting.slug}` : undefined,
+  });
 }
 
 export default async function BusinessMeetingDetailPage({ params }) {

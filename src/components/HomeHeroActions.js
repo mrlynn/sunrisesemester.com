@@ -49,6 +49,29 @@ export default function HomeHeroActions({ showDailyReflectionLink = false }) {
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
         <Button
           component={Link}
+          href="/newcomer"
+          variant="contained"
+          size="large"
+          sx={{
+            py: 1.25,
+            px: 4,
+            fontSize: "1rem",
+            fontWeight: 700,
+            minWidth: { xs: "100%", sm: "auto" },
+            color: "#2d1b4e",
+            background: "#ffffff",
+            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
+            borderRadius: 8,
+            "&:hover": {
+              background: "#fff4d6",
+              boxShadow: "0 6px 20px rgba(0, 0, 0, 0.28)",
+            },
+          }}
+        >
+          New here? Start here
+        </Button>
+        <Button
+          component={Link}
           href="/meetings"
           variant="contained"
           color="secondary"

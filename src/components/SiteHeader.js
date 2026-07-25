@@ -30,6 +30,7 @@ import {
 function NavLinkButton({ item, pathname }) {
   const active = isSiteNavActive(pathname, item.href);
   const emphasis = Boolean(item.emphasis);
+  const outline = item.accent === "outline";
 
   if (emphasis) {
     return (
@@ -49,6 +50,34 @@ function NavLinkButton({ item, pathname }) {
           "&:hover": {
             background: "linear-gradient(135deg, #ff5a1f 0%, #ff7a45 100%)",
             boxShadow: "0 4px 14px rgba(255,107,53,0.35)",
+          },
+        }}
+      >
+        {item.label}
+      </Button>
+    );
+  }
+
+  // Distinct from `emphasis` on purpose: this marks a page as important
+  // without visually duplicating the primary "Meetings" pill next to it.
+  if (outline) {
+    return (
+      <Button
+        component={Link}
+        href={item.href}
+        variant="outlined"
+        size="small"
+        sx={{
+          textTransform: "none",
+          fontWeight: 700,
+          px: 2,
+          color: "#ff6b35",
+          borderWidth: "1.5px",
+          borderColor: active ? "#ff6b35" : "rgba(255,107,53,0.45)",
+          "&:hover": {
+            borderWidth: "1.5px",
+            borderColor: "#ff6b35",
+            backgroundColor: "rgba(255,107,53,0.06)",
           },
         }}
       >

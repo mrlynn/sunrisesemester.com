@@ -88,6 +88,11 @@ export default function MemberLoginForm() {
               {busy ? "Signing in…" : "Sign in"}
             </Button>
             <Typography variant="body2" color="text.secondary">
+              <Link href="/member/forgot-password" style={{ color: "#ff6b35", fontWeight: 600 }}>
+                Forgot your password?
+              </Link>
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
               New here?{" "}
               <Link href="/member/register" style={{ color: "#ff6b35", fontWeight: 600 }}>
                 Create an account
