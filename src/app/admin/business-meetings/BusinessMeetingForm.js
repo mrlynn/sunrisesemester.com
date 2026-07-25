@@ -32,6 +32,7 @@ import {
   meetingSlugFromDate,
   STANDARD_SCHEDULE_DAYS,
 } from "@/lib/businessMeetingShared";
+import { parseBusinessMeetingNotes } from "@/lib/parseBusinessMeetingNotes";
 
 function toDateInputValue(date) {
   if (!date) return "";
@@ -147,6 +148,8 @@ export default function BusinessMeetingForm({ initial, mode }) {
   const [message, setMessage] = React.useState(null);
   const [error, setError] = React.useState(null);
   const [busy, setBusy] = React.useState(false);
+  const [pasteNotes, setPasteNotes] = React.useState("");
+  const [pasteWarnings, setPasteWarnings] = React.useState([]);
 
   function set(patch) {
     setState((s) => ({ ...s, ...patch }));
@@ -159,6 +162,49 @@ export default function BusinessMeetingForm({ initial, mode }) {
       patch.slug = meetingSlugFromDate(meetingDate);
     }
     set(patch);
+  }
+
+  function applyPastedNotes() {
+    setError(null);
+    setMessage(null);
+    setPasteWarnings([]);
+    const result = parseBusinessMeetingNotes(pasteNotes, {
+      meetingDate: state.meetingDate || undefined,
+    });
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+
+    const parsed = result.value;
+    setState((s) => {
+      const meetingDate = s.meetingDate || parsed.meetingDate;
+      const slug = slugTouched
+        ? s.slug
+        : parsed.slug || (meetingDate ? meetingSlugFromDate(meetingDate) : s.slug);
+      return {
+        ...s,
+        meetingDate,
+        slug,
+        openingNotes: parsed.openingNotes || s.openingNotes,
+        sections: parsed.sections.length > 0 ? parsed.sections : s.sections,
+        oldBusiness: parsed.oldBusiness,
+        newBusiness: parsed.newBusiness,
+        adjournment: {
+          movedBy: parsed.adjournment.movedBy || s.adjournment.movedBy,
+          time: parsed.adjournment.time || s.adjournment.time,
+          closingNotes: parsed.adjournment.closingNotes || s.adjournment.closingNotes,
+        },
+        commitmentSchedules:
+          parsed.commitmentSchedules.length > 0
+            ? parsed.commitmentSchedules
+            : s.commitmentSchedules,
+      };
+    });
+    setPasteWarnings(result.warnings || []);
+    setMessage(
+      "Notes parsed into the form. Review the fields below, then save. Nothing is published until you save.",
+    );
   }
 
   function updateSection(index, patch) {
@@ -405,6 +451,45 @@ export default function BusinessMeetingForm({ initial, mode }) {
 
   return (
     <Stack spacing={3}>
+      <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 } }}>
+        <Stack spacing={2}>
+          <Typography variant="h6">Paste notes to import</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Paste a secretary write-up with headings like <em>Chair Rotation</em>,{" "}
+            <em>Treasurer&apos;s Report</em>, <em>Old Business</em>, <em>New Business</em>,{" "}
+            <em>Action Items</em>, and <em>Adjournment</em>. Lines such as{" "}
+            <code>Motion:</code> / <code>Second:</code> / <code>Result:</code> are picked up
+            automatically. Review everything below before saving.
+          </Typography>
+          <TextField
+            label="Meeting notes"
+            fullWidth
+            multiline
+            minRows={8}
+            value={pasteNotes}
+            onChange={(e) => setPasteNotes(e.target.value)}
+            placeholder="Paste the full meeting notes here…"
+          />
+          <Button
+            variant="outlined"
+            onClick={applyPastedNotes}
+            disabled={!pasteNotes.trim()}
+            sx={{ alignSelf: "flex-start" }}
+          >
+            Parse into form
+          </Button>
+          {pasteWarnings.length > 0 ? (
+            <Alert severity="warning">
+              {pasteWarnings.map((w) => (
+                <div key={w}>{w}</div>
+              ))}
+            </Alert>
+          ) : null}
+          {error ? <Alert severity="error">{error}</Alert> : null}
+          {message ? <Alert severity="success">{message}</Alert> : null}
+        </Stack>
+      </Paper>
+
       <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 } }}>
         <Stack spacing={2}>
           <Typography variant="h6">Meeting details</Typography>
