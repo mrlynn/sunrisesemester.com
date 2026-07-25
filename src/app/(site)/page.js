@@ -24,7 +24,11 @@ export default async function HomePage() {
 
   return (
     <Box>
-      <SunriseHero title={landing.heroTitle} subtitle={landing.heroSubtitle} />
+      <SunriseHero
+        title={landing.heroTitle}
+        subtitle={landing.heroSubtitle}
+        showDailyReflectionLink={Boolean(reflection)}
+      />
 
       {reflection ? <DailyReflection reflection={reflection} /> : null}
 

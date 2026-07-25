@@ -84,10 +84,12 @@ export default function DailyReflection({ reflection, variant = "section" }) {
 
   return (
     <Box
+      id={isStandalone ? undefined : "daily-reflection"}
       sx={{
         position: "relative",
         overflow: "hidden",
         py: { xs: 8, md: 12 },
+        scrollMarginTop: { xs: 80, md: 96 },
         background:
           "linear-gradient(180deg, #fff4d6 0%, #ffe4b8 50%, #ffcfa1 100%)",
       }}
