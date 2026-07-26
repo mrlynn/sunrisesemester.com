@@ -3,6 +3,7 @@ import { jwtVerify } from "jose";
 import { COOKIE_NAME } from "./lib/auth";
 import { MEMBER_COOKIE_NAME } from "./lib/memberAuth";
 import { canAccessAdminPath, defaultAdminPath, isRole } from "./lib/roles";
+import { ADMIN_PUBLIC_PATHS } from "./lib/adminPublicPaths";
 
 const STATIC_ASSET_PATH =
   /\.(?:woff2?|ttf|otf|eot|png|jpe?g|gif|webp|svg|ico|css|js|map)$/i;
@@ -69,8 +70,9 @@ export async function middleware(request) {
     return NextResponse.next();
   }
 
-  // Sign-in page must stay reachable without a session (avoid redirect loops).
-  if (pathname === "/admin") {
+  // Sign-in, forgot-password, and reset-password must stay reachable without
+  // a session (avoid redirect loops for someone who is, by definition, locked out).
+  if (ADMIN_PUBLIC_PATHS.has(pathname)) {
     return NextResponse.next();
   }
 

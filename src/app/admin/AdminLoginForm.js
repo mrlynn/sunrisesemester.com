@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
+import Link from "next/link";
 import { defaultAdminPath } from "@/lib/roles";
 
 export default function AdminLoginForm() {
@@ -84,6 +85,11 @@ export default function AdminLoginForm() {
             <Button type="submit" variant="contained" disabled={busy} size="large">
               {busy ? "Signing in…" : "Sign in"}
             </Button>
+            <Typography variant="body2" color="text.secondary">
+              <Link href="/admin/forgot-password" style={{ color: "inherit" }}>
+                Forgot your password?
+              </Link>
+            </Typography>
           </Stack>
         </form>
       </Paper>

@@ -44,7 +44,13 @@
       "Bash(node -e ' *)",
       "Bash(node --env-file=.env.local -e ' *)",
       "Bash(ps -p 68689 -o pid,ppid,etime,command)",
-      "Bash(curl -sI http://localhost:3000/member/login)"
+      "Bash(curl -sI http://localhost:3000/member/login)",
+      "Bash(curl -s -X POST http://localhost:3000/api/admin/forgot-password -H 'content-type: application/json' -d '{\"email\":\"definitely-not-an-editor@example.com\"}' -w '\\\\nHTTP_STATUS:%{http_code}\\\\n')",
+      "Bash(curl -s -X POST http://localhost:3000/api/admin/forgot-password -H 'content-type: application/json' -d '{\"email\":\"curl-editor-pwreset-test@example.com\"}' -w '\\\\nHTTP_STATUS:%{http_code}\\\\n')",
+      "Bash(curl -s -X POST http://localhost:3000/api/admin/reset-password -H 'content-type: application/json' -d '{\"token\":\"__TRACKED_VAR__\",\"password\":\"anotherPass789\",\"confirmPassword\":\"anotherPass789\"}' -w '\\\\nHTTP_STATUS:%{http_code}\\\\n')",
+      "Bash(curl -s -X POST http://localhost:3000/api/admin/login -H 'content-type: application/json' -d '{\"email\":\"curl-editor-pwreset-test@example.com\",\"password\":\"originalEditorPass123\"}' -w '\\\\nHTTP_STATUS:%{http_code}\\\\n')",
+      "Bash(curl -s -X POST http://localhost:3000/api/admin/login -H 'content-type: application/json' -d '{\"email\":\"curl-editor-pwreset-test@example.com\",\"password\":\"newEditorPass456\"}' -w '\\\\nHTTP_STATUS:%{http_code}\\\\n')",
+      "Bash(kill -9 18599)"
     ]
   },
   "enableAllProjectMcpServers": true,

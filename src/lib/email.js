@@ -84,6 +84,21 @@ export async function sendPasswordResetEmail({ email, resetUrl }) {
   });
 }
 
+export async function sendEditorPasswordResetEmail({ email, resetUrl }) {
+  await sendMail({
+    to: email,
+    subject: "Reset your Sunrise Semester editor password",
+    html: `
+      <p>We received a request to reset the password for your Sunrise Semester editor/admin account.</p>
+      <p><a href="${escapeHtml(resetUrl)}">Reset your password</a></p>
+      <p>This link expires in 1 hour and can only be used once.</p>
+      <p>If you didn't request this, you can safely ignore this email — your password won't be changed.</p>
+      <p style="color:#666;font-size:12px;">Sunrise Semester — Alcoholics Anonymous home group</p>
+    `,
+    text: `We received a request to reset the password for your Sunrise Semester editor/admin account.\n\nReset your password:\n${resetUrl}\n\nThis link expires in 1 hour and can only be used once.\n\nIf you didn't request this, you can safely ignore this email — your password won't be changed.`,
+  });
+}
+
 export async function sendBroadcastEmail({ to, subject, body, unsubscribeUrl }) {
   const htmlBody = plainTextToHtml(body);
   await sendMail({

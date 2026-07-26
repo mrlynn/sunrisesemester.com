@@ -19,6 +19,7 @@ import Stack from "@mui/material/Stack";
 import MenuIcon from "@mui/icons-material/Menu";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { navGroupsForRole, ROLE_LABELS } from "@/lib/roles";
+import { ADMIN_PUBLIC_PATHS } from "@/lib/adminPublicPaths";
 
 const DRAWER_WIDTH = 260;
 
@@ -96,7 +97,9 @@ export default function AdminShell({ session, children }) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
 
-  const isLogin = pathname === "/admin";
+  // Public auth pages (sign-in, forgot/reset-password) render without the
+  // authenticated shell chrome, regardless of session state.
+  const isPublicAuthPage = ADMIN_PUBLIC_PATHS.has(pathname);
   const role = session?.role || "admin";
   const groups = navGroupsForRole(role);
   const identity = session?.email || session?.name || ROLE_LABELS[role] || "Editor";
@@ -112,7 +115,7 @@ export default function AdminShell({ session, children }) {
     }
   }
 
-  if (isLogin) {
+  if (isPublicAuthPage) {
     return children;
   }
 
