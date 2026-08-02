@@ -20,6 +20,7 @@ import Divider from "@mui/material/Divider";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MemberAccountButton from "@/components/MemberAccountButton";
+import SiteSearch from "@/components/SiteSearch";
 import {
   SITE_NAV_GROUPS,
   SITE_NAV_MORE,
@@ -238,18 +239,16 @@ export default function SiteHeader() {
           </Menu>
         </Box>
 
-        <Box sx={{ display: { xs: "none", lg: "flex" }, alignItems: "center", ml: "auto" }}>
-          <MemberAccountButton />
-        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, ml: "auto" }}>
+          <SiteSearch />
 
-        {/* Tablet: Meetings CTA + menu (full primary is lg+) */}
-        <Box sx={{ display: { xs: "none", md: "flex", lg: "none" }, alignItems: "center", gap: 1, ml: "auto" }}>
           <Button
             component={Link}
             href="/meetings"
             variant="contained"
             size="small"
             sx={{
+              display: { xs: "none", md: "inline-flex", lg: "none" },
               textTransform: "none",
               fontWeight: 700,
               background: "linear-gradient(135deg, #ff6b35 0%, #ff8c5a 100%)",
@@ -258,22 +257,24 @@ export default function SiteHeader() {
           >
             Meetings
           </Button>
-          <MemberAccountButton />
-        </Box>
 
-        <IconButton
-          color="inherit"
-          edge="end"
-          onClick={() => setDrawerOpen(true)}
-          sx={{
-            display: { lg: "none" },
-            color: "#2c2c2c",
-            ml: { xs: 0, md: 0.5 },
-          }}
-          aria-label="Open menu"
-        >
-          <MenuIcon />
-        </IconButton>
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
+            <MemberAccountButton />
+          </Box>
+
+          <IconButton
+            color="inherit"
+            edge="end"
+            onClick={() => setDrawerOpen(true)}
+            sx={{
+              display: { lg: "none" },
+              color: "#2c2c2c",
+            }}
+            aria-label="Open menu"
+          >
+            <MenuIcon />
+          </IconButton>
+        </Box>
       </Toolbar>
 
       <Drawer
