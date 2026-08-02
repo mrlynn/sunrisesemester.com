@@ -5,6 +5,13 @@
 - React 19
 - Material UI (MUI)
 - MongoDB Atlas + Mongoose
+- Vercel AI SDK (`ai`, `@ai-sdk/react`, `@ai-sdk/openai`) for public site search
+
+### AI site search
+- UI: search icon in `SiteHeader` → `SiteSearch` dialog (⌘K / Ctrl+K)
+- API: `POST /api/ask` (rate-limited) streams answers via AI SDK UI message protocol
+- Retrieval: keyword ranking over static page catalog + AA/group facts + published Mongo content (`src/lib/siteSearchKnowledge.js`, `src/lib/siteSearch.js`)
+- Required env: `OPENAI_API_KEY` (optional `OPENAI_MODEL`, default `gpt-5.4-mini`)
 
 ### Conventions
 - Use `connectDB` from `@/lib/mongodb` in server routes/components before DB operations.
