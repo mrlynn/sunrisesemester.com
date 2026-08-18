@@ -151,11 +151,21 @@ export function BusinessMeetingMinutes({ meeting }) {
         </Box>
       ) : null}
 
-      {(meeting.commitmentSchedules || []).map((sched, i) => (
-        <Box key={i} sx={{ mt: 2 }}>
-          <CommitmentScheduleTable schedule={sched} />
+      {(meeting.commitmentSchedules || []).length > 0 ? (
+        <Box sx={{ mt: 3 }}>
+          <Typography variant="h6" component="h2" sx={{ fontWeight: 700, color: "#5b2c6f", mb: 1 }}>
+            Commitment schedules
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Voted at this meeting for the following month’s service slots.
+          </Typography>
+          {(meeting.commitmentSchedules || []).map((sched, i) => (
+            <Box key={i} sx={{ mt: 2 }}>
+              <CommitmentScheduleTable schedule={sched} />
+            </Box>
+          ))}
         </Box>
-      ))}
+      ) : null}
 
       {meeting.signOff ? (
         <Typography variant="body1" sx={{ mt: 4, fontStyle: "italic" }}>

@@ -28,6 +28,15 @@ export const SITE_PAGE_DOCS = [
     body: `Weekly Zoom meetings (Eastern time). Zoom ID ${ZOOM_ID}. Join: ${ZOOM_URL}. Weekday Daily Sunrise Mon–Fri 7:15–8:15 AM. Saturday Men's Meeting 8:00–9:15 AM. Saturday Women's Meeting 9:30 AM. Sunday Morning 8:00–9:00 AM.`,
   },
   {
+    id: "page-meeting-topics",
+    type: "page",
+    title: "Meeting Topic Chooser",
+    href: "/meeting-topics",
+    keywords:
+      "chair chairperson discussion topic opening questions step tradition newcomer facilitate",
+    body: "A guided tool for AA meeting chairs that suggests a discussion topic, a short ready-to-read opening, three open-ended questions, and an optional verified literature link.",
+  },
+  {
     id: "page-newcomer",
     type: "page",
     title: "Newcomer welcome",

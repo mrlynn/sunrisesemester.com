@@ -9,8 +9,12 @@ import {
 import { openai } from "@ai-sdk/openai";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 import {
+  OFF_TOPIC_MATCHES,
+  OFF_TOPIC_REPLY,
   SITE_SEARCH_SYSTEM_PROMPT,
   buildSiteSearchContext,
+  isOnTopicQuery,
+  priorUserTurnWasOnTopic,
 } from "@/lib/siteSearch";
 
 function latestUserText(messages) {
@@ -29,6 +33,17 @@ function latestUserText(messages) {
     if (text) return text;
   }
   return "";
+}
+
+function writeOffTopicReply(writer) {
+  const textId = "off-topic";
+  writer.write({
+    type: "data-matches",
+    data: { items: OFF_TOPIC_MATCHES },
+  });
+  writer.write({ type: "text-start", id: textId });
+  writer.write({ type: "text-delta", id: textId, delta: OFF_TOPIC_REPLY });
+  writer.write({ type: "text-end", id: textId });
 }
 
 export async function POST(request) {
@@ -70,6 +85,19 @@ export async function POST(request) {
     }
 
     const { matches, contextText } = await buildSiteSearchContext(query);
+    const onTopic = isOnTopicQuery(query, matches, {
+      priorOnTopic: priorUserTurnWasOnTopic(messages),
+    });
+
+    if (!onTopic) {
+      const stream = createUIMessageStream({
+        execute: ({ writer }) => {
+          writeOffTopicReply(writer);
+        },
+      });
+      return createUIMessageStreamResponse({ stream });
+    }
+
     const modelId = process.env.OPENAI_MODEL || "gpt-5.4-mini";
     const matchPayload = matches.slice(0, 5).map((m) => ({
       title: m.title,
@@ -92,7 +120,7 @@ Relevant site context:
 ${contextText || "(no strong matches — answer carefully and point people to /meetings or /newcomer)"}`,
           messages: await convertToModelMessages(messages),
           maxOutputTokens: 700,
-          temperature: 0.3,
+          temperature: 0.2,
         });
 
         writer.merge(toUIMessageStream({ stream: result.stream }));

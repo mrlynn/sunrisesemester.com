@@ -83,9 +83,53 @@ function MinutesList({ meetings }) {
   );
 }
 
+function ScheduleBlock({ view, emptyCopy }) {
+  const schedules = view?.schedules || [];
+  const source = view?.source;
+
+  if (schedules.length === 0) {
+    return (
+      <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+        <Typography color="text.secondary">{emptyCopy}</Typography>
+      </Paper>
+    );
+  }
+
+  return (
+    <Stack spacing={3}>
+      {source ? (
+        <Typography variant="body2" color="text.secondary">
+          From the {source.label} business meeting{" "}
+          <Link
+            href={`/business-meetings/${source.slug}`}
+            style={{ color: "#c43c68", fontWeight: 600 }}
+          >
+            (view full minutes)
+          </Link>
+          .
+        </Typography>
+      ) : null}
+      {schedules.map((sched, i) => (
+        <Paper
+          key={i}
+          variant="outlined"
+          sx={{ p: { xs: 2, md: 3 }, borderRadius: 3, bgcolor: "rgba(255,255,255,0.9)" }}
+        >
+          <CommitmentScheduleTable schedule={sched} />
+        </Paper>
+      ))}
+    </Stack>
+  );
+}
+
 export default function GroupServiceHub({ weeklyService, commitment, meetings }) {
-  const schedules = commitment?.schedules || [];
-  const source = commitment?.source;
+  const current = commitment?.current || {
+    schedules: commitment?.schedules || [],
+    source: commitment?.source || null,
+    monthLabel: commitment?.monthLabel || "",
+  };
+  const next = commitment?.next || null;
+  const showNext = Boolean(next?.schedules?.length);
 
   return (
     <Box sx={{ bgcolor: "#faf8f6", minHeight: "60vh", py: { xs: 4, md: 6 } }}>
@@ -131,48 +175,43 @@ export default function GroupServiceHub({ weeklyService, commitment, meetings })
                   fontWeight: 800,
                   lineHeight: 1.1,
                   color: "#1d1d1d",
-                  fontFamily: 'var(--font-serif), Georgia, serif',
+                  fontFamily: "var(--font-serif), Georgia, serif",
                   mb: 1,
                 }}
               >
-                Monthly commitment schedule
+                {current.monthLabel
+                  ? `${current.monthLabel} commitment schedule`
+                  : "Monthly commitment schedule"}
               </Typography>
               <Typography sx={{ fontSize: "1.05rem", color: "#666666", mb: 3, maxWidth: 560 }}>
-                Chair, sherpa, and other service slots for the month — as recorded in business
-                meeting minutes.
+                Chair, sherpa, and other service slots for this month — set at the previous
+                business meeting (second Tuesday) for the month ahead.
               </Typography>
-              {schedules.length === 0 ? (
-                <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
-                  <Typography color="text.secondary">
-                    No monthly schedule has been published yet. It appears in the minutes when
-                    the group sets commitments for the coming month.
+              <ScheduleBlock
+                view={current}
+                emptyCopy="No schedule has been published for this month yet. It appears when the prior month’s business meeting minutes include the commitment tables."
+              />
+
+              {showNext ? (
+                <Box sx={{ mt: 5 }}>
+                  <Typography
+                    component="h3"
+                    sx={{
+                      fontSize: { xs: "1.35rem", md: "1.6rem" },
+                      fontWeight: 800,
+                      color: "#1d1d1d",
+                      fontFamily: "var(--font-serif), Georgia, serif",
+                      mb: 1,
+                    }}
+                  >
+                    Coming up: {next.monthLabel}
                   </Typography>
-                </Paper>
-              ) : (
-                <Stack spacing={4}>
-                  {source ? (
-                    <Typography variant="body2" color="text.secondary">
-                      From the {source.label} business meeting{" "}
-                      <Link
-                        href={`/business-meetings/${source.slug}`}
-                        style={{ color: "#c43c68", fontWeight: 600 }}
-                      >
-                        (view full minutes)
-                      </Link>
-                      .
-                    </Typography>
-                  ) : null}
-                  {schedules.map((sched, i) => (
-                    <Paper
-                      key={i}
-                      variant="outlined"
-                      sx={{ p: { xs: 2, md: 3 }, borderRadius: 3, bgcolor: "rgba(255,255,255,0.9)" }}
-                    >
-                      <CommitmentScheduleTable schedule={sched} />
-                    </Paper>
-                  ))}
-                </Stack>
-              )}
+                  <Typography sx={{ fontSize: "1rem", color: "#666666", mb: 2, maxWidth: 560 }}>
+                    Already voted at this month’s business meeting — takes effect next month.
+                  </Typography>
+                  <ScheduleBlock view={next} emptyCopy="" />
+                </Box>
+              ) : null}
             </Box>
 
             <Box id="minutes" component="section">
@@ -183,7 +222,7 @@ export default function GroupServiceHub({ weeklyService, commitment, meetings })
                   fontWeight: 800,
                   lineHeight: 1.1,
                   color: "#1d1d1d",
-                  fontFamily: 'var(--font-serif), Georgia, serif',
+                  fontFamily: "var(--font-serif), Georgia, serif",
                   mb: 1,
                 }}
               >

@@ -21,6 +21,7 @@ import MenuBookIcon from "@mui/icons-material/MenuBook";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import SlideshowIcon from "@mui/icons-material/Slideshow";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 const ZOOM_ID = "901 964 988";
 const ZOOM_PASSWORD = "417417";
@@ -976,14 +977,28 @@ export default function SherpaGuidePage() {
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} sx={{ mb: 5 }}>
             <Button
               component={Link}
-              href="/meetings"
+              href="/meeting-topics"
               variant="contained"
+              startIcon={<AutoAwesomeIcon />}
               sx={{
-                bgcolor: "#ff6b35",
+                background: "linear-gradient(135deg, #c43c68 0%, #ff6b35 100%)",
                 fontWeight: 700,
                 textTransform: "none",
                 borderRadius: 2,
-                "&:hover": { bgcolor: "#e55a28" },
+              }}
+            >
+              Prepare a discussion topic
+            </Button>
+            <Button
+              component={Link}
+              href="/meetings"
+              variant="outlined"
+              sx={{
+                borderColor: "rgba(255,107,53,0.4)",
+                color: "#ff6b35",
+                fontWeight: 700,
+                textTransform: "none",
+                borderRadius: 2,
               }}
             >
               Open formats on Meetings

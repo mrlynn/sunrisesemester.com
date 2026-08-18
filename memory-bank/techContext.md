@@ -11,6 +11,7 @@
 - UI: search icon in `SiteHeader` → `SiteSearch` dialog (⌘K / Ctrl+K)
 - API: `POST /api/ask` (rate-limited) streams answers via AI SDK UI message protocol
 - Retrieval: keyword ranking over static page catalog + AA/group facts + published Mongo content (`src/lib/siteSearchKnowledge.js`, `src/lib/siteSearch.js`)
+- Topic gate: `src/lib/siteSearchTopic.js` refuses off-topic asks (general knowledge, recipes, etc.) before the model runs; system prompt also hard-limits scope to Sunrise Semester / AA / recovery
 - Required env: `OPENAI_API_KEY` (optional `OPENAI_MODEL`, default `gpt-5.4-mini`)
 
 ### Conventions

@@ -27,8 +27,10 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import {
   defaultAgendaSections,
+  defaultAppliesToMonth,
   emptyCommitmentSchedule,
   emptyScheduleRow,
+  formatMonthLabel,
   meetingSlugFromDate,
   STANDARD_SCHEDULE_DAYS,
 } from "@/lib/businessMeetingShared";
@@ -97,6 +99,9 @@ function normalizeInitial(initial) {
     commitmentSchedules: Array.isArray(initial.commitmentSchedules)
       ? initial.commitmentSchedules.map((s) => ({
           title: s.title || "",
+          appliesToMonth:
+            s.appliesToMonth ||
+            (initial.meetingDate ? defaultAppliesToMonth(initial.meetingDate) : ""),
           columns: [...(s.columns || [])],
           rows: (s.rows || []).map((row) => ({
             day: row.day || "",
@@ -157,11 +162,25 @@ export default function BusinessMeetingForm({ initial, mode }) {
 
   function onMeetingDateChange(e) {
     const meetingDate = e.target.value;
-    const patch = { meetingDate };
-    if (!slugTouched && meetingDate) {
-      patch.slug = meetingSlugFromDate(meetingDate);
-    }
-    set(patch);
+    setState((s) => {
+      const oldDefault = s.meetingDate ? defaultAppliesToMonth(s.meetingDate) : "";
+      const newDefault = meetingDate ? defaultAppliesToMonth(meetingDate) : "";
+      const patch = { meetingDate };
+      if (!slugTouched && meetingDate) {
+        patch.slug = meetingSlugFromDate(meetingDate);
+      }
+      return {
+        ...s,
+        ...patch,
+        commitmentSchedules: s.commitmentSchedules.map((sched) => ({
+          ...sched,
+          appliesToMonth:
+            !sched.appliesToMonth || sched.appliesToMonth === oldDefault
+              ? newDefault
+              : sched.appliesToMonth,
+        })),
+      };
+    });
   }
 
   function applyPastedNotes() {
@@ -274,7 +293,10 @@ export default function BusinessMeetingForm({ initial, mode }) {
   function addSchedule() {
     setState((s) => ({
       ...s,
-      commitmentSchedules: [...s.commitmentSchedules, emptyCommitmentSchedule(4)],
+      commitmentSchedules: [
+        ...s.commitmentSchedules,
+        emptyCommitmentSchedule(4, s.meetingDate ? defaultAppliesToMonth(s.meetingDate) : ""),
+      ],
     }));
   }
 
@@ -736,8 +758,8 @@ export default function BusinessMeetingForm({ initial, mode }) {
 
       <Typography variant="h6">Commitment schedules</Typography>
       <Typography variant="body2" color="text.secondary">
-        Add one or more tables (monthly chair, sherpa, greeter, etc.). Column headers and row count
-        are fully flexible.
+        Add one or more tables (monthly chair, sherpa, greeter, etc.). These apply to the month
+        after the business meeting by default (second Tuesday sets next month’s commitments).
       </Typography>
       {state.commitmentSchedules.map((sched, schedIndex) => (
         <Paper key={schedIndex} variant="outlined" sx={{ p: 2, overflow: "auto" }}>
@@ -757,13 +779,32 @@ export default function BusinessMeetingForm({ initial, mode }) {
                 <DeleteOutlineIcon />
               </IconButton>
             </Stack>
-            <TextField
-              label="Schedule title"
-              fullWidth
-              placeholder="JANUARY 2023 SCHEDULE"
-              value={sched.title}
-              onChange={(e) => updateSchedule(schedIndex, { title: e.target.value })}
-            />
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+              <TextField
+                label="Schedule title"
+                fullWidth
+                placeholder="JANUARY 2023 SCHEDULE"
+                value={sched.title}
+                onChange={(e) => updateSchedule(schedIndex, { title: e.target.value })}
+              />
+              <TextField
+                label="Applies to month"
+                type="month"
+                value={sched.appliesToMonth || ""}
+                onChange={(e) =>
+                  updateSchedule(schedIndex, { appliesToMonth: e.target.value })
+                }
+                InputLabelProps={{ shrink: true }}
+                helperText={
+                  sched.appliesToMonth
+                    ? `Shown as the ${formatMonthLabel(sched.appliesToMonth)} schedule`
+                    : state.meetingDate
+                      ? `Defaults to ${formatMonthLabel(defaultAppliesToMonth(state.meetingDate))}`
+                      : "Set the meeting date to default this"
+                }
+                sx={{ minWidth: { sm: 200 } }}
+              />
+            </Stack>
             <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
               <Button size="small" startIcon={<AddIcon />} onClick={() => addScheduleColumn(schedIndex)}>
                 Add column
