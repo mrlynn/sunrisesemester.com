@@ -14,6 +14,7 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import CheckIcon from "@mui/icons-material/Check";
 import ArticleIcon from "@mui/icons-material/Article";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import Link from "next/link";
 import WeeklyServiceSection from "@/components/WeeklyServiceSection";
 import { ZOOM_ID, ZOOM_URL, meetings } from "@/lib/meetingsSchedule";
@@ -316,6 +317,76 @@ function ZoomCard({ onCopy, copied }) {
   );
 }
 
+function TopicChooserCard() {
+  return (
+    <Box
+      sx={{
+        p: { xs: 3, md: 4 },
+        borderRadius: 4,
+        border: "1px solid #f0d8df",
+        background:
+          "linear-gradient(135deg, rgba(196,60,104,0.08) 0%, rgba(255,107,53,0.08) 100%)",
+      }}
+    >
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={2.5}
+        sx={{ alignItems: { sm: "center" }, justifyContent: "space-between" }}
+      >
+        <Box>
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+            <AutoAwesomeIcon sx={{ color: "#c43c68" }} />
+            <Typography
+              sx={{
+                color: "#c43c68",
+                fontWeight: 800,
+                fontSize: "0.75rem",
+                letterSpacing: "0.16em",
+                textTransform: "uppercase",
+              }}
+            >
+              Chairing a discussion?
+            </Typography>
+          </Stack>
+          <Typography
+            component="h2"
+            sx={{
+              color: "#2d1b4e",
+              fontFamily: "var(--font-serif), Georgia, serif",
+              fontWeight: 800,
+              fontSize: { xs: "1.55rem", md: "1.85rem" },
+              mb: 0.75,
+            }}
+          >
+            Start with a meeting topic.
+          </Typography>
+          <Typography sx={{ color: "#555555", lineHeight: 1.65, maxWidth: 520 }}>
+            Get a ready-to-read opening and three questions, shaped for your meeting.
+          </Typography>
+        </Box>
+        <Button
+          component={Link}
+          href="/meeting-topics"
+          variant="contained"
+          startIcon={<AutoAwesomeIcon />}
+          sx={{
+            flexShrink: 0,
+            textTransform: "none",
+            fontWeight: 800,
+            borderRadius: 8,
+            px: 3,
+            py: 1.25,
+            background: "linear-gradient(135deg, #c43c68 0%, #ff6b35 100%)",
+            boxShadow: "none",
+          }}
+        >
+          Choose a topic
+        </Button>
+      </Stack>
+    </Box>
+  );
+}
+
 function MeetingCard({ meeting, index, formatUrls }) {
   const isWeekday = meeting.id === "weekdays";
 
@@ -612,6 +683,7 @@ export default function MeetingsSchedule({ weeklyService, formatUrls = {} }) {
       <Container maxWidth="md" sx={{ py: { xs: 6, md: 10 } }}>
         <Stack spacing={{ xs: 5, md: 7 }}>
           <ZoomCard onCopy={copy} copied={copied} />
+          <TopicChooserCard />
           {weeklyService ? (
             <Box>
               <WeeklyServiceSection schedule={weeklyService} />

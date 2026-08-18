@@ -1,16 +1,28 @@
 import connectDB from "@/lib/mongodb";
 import BusinessMeeting from "@/models/BusinessMeeting";
 import {
+  currentMonthKey,
   formatMeetingDateLabel,
+  formatMonthLabel,
   meetingSlugFromDate,
+  nextMonthKey,
+  normalizeAppliesToMonth,
+  resolveAppliesToMonth,
   slugifyMeetingSlug,
 } from "@/lib/businessMeetingShared";
 
 export {
   STANDARD_SCHEDULE_DAYS,
   DEFAULT_AGENDA_TITLES,
+  COMMITMENT_TIMEZONE,
   meetingSlugFromDate,
   formatMeetingDateLabel,
+  formatMonthLabel,
+  currentMonthKey,
+  nextMonthKey,
+  defaultAppliesToMonth,
+  normalizeAppliesToMonth,
+  resolveAppliesToMonth,
   defaultAgendaSections,
   emptyScheduleRow,
   emptyCommitmentSchedule,
@@ -92,33 +104,87 @@ export async function getBusinessMeetingById(id) {
   return serializeDoc(doc);
 }
 
-/** Monthly commitment tables from the most recent published minutes that include them. */
-export async function getLatestPublishedCommitmentSchedules() {
+function emptyCommitmentView(appliesToMonth = "") {
+  const month = normalizeAppliesToMonth(appliesToMonth);
+  return {
+    schedules: [],
+    source: null,
+    appliesToMonth: month,
+    monthLabel: formatMonthLabel(month),
+  };
+}
+
+/**
+ * Commitment tables that apply to a calendar month (YYYY-MM).
+ * Business meetings set schedules for the following month; legacy docs without
+ * appliesToMonth fall back to meeting month + 1.
+ */
+export async function getCommitmentSchedulesForMonth(monthKey) {
+  const target = normalizeAppliesToMonth(monthKey) || currentMonthKey();
+  if (!target) return emptyCommitmentView("");
+
   if (!process.env.MONGODB_URI) {
-    return { schedules: [], source: null };
+    return emptyCommitmentView(target);
   }
+
   await connectDB();
-  const doc = await BusinessMeeting.findOne({
+  const docs = await BusinessMeeting.find({
     published: true,
     commitmentSchedules: { $elemMatch: { columns: { $exists: true, $ne: [] } } },
   })
     .sort({ meetingDate: -1 })
-    .select({ commitmentSchedules: 1, slug: 1, meetingDate: 1 })
+    .limit(36)
+    .select({ commitmentSchedules: 1, slug: 1, meetingDate: 1, _id: 1 })
     .lean();
 
-  if (!doc) {
-    return { schedules: [], source: null };
+  for (const doc of docs) {
+    const schedules = (doc.commitmentSchedules || [])
+      .filter((s) => Array.isArray(s.columns) && s.columns.length > 0)
+      .map((s) => ({
+        ...s,
+        appliesToMonth: resolveAppliesToMonth(s, doc.meetingDate),
+      }))
+      .filter((s) => s.appliesToMonth === target);
+
+    if (schedules.length > 0) {
+      return {
+        schedules,
+        source: {
+          _id: String(doc._id),
+          slug: doc.slug,
+          label: formatMeetingDateLabel(doc.meetingDate),
+          meetingDate: doc.meetingDate,
+        },
+        appliesToMonth: target,
+        monthLabel: formatMonthLabel(target),
+      };
+    }
   }
 
-  const schedules = (doc.commitmentSchedules || []).filter(
-    (s) => Array.isArray(s.columns) && s.columns.length > 0,
-  );
+  return emptyCommitmentView(target);
+}
 
+/** Current + next month commitment views for public hub and admin pin. */
+export async function getCommitmentScheduleViews(now = new Date()) {
+  const currentKey = currentMonthKey(now);
+  const nextKey = nextMonthKey(currentKey);
+  const [current, next] = await Promise.all([
+    getCommitmentSchedulesForMonth(currentKey),
+    getCommitmentSchedulesForMonth(nextKey),
+  ]);
+  return { current, next };
+}
+
+/**
+ * @deprecated Prefer getCommitmentSchedulesForMonth / getCommitmentScheduleViews.
+ * Kept for any callers expecting the old shape; returns the current month.
+ */
+export async function getLatestPublishedCommitmentSchedules() {
+  const view = await getCommitmentSchedulesForMonth(currentMonthKey());
   return {
-    schedules,
-    source: {
-      slug: doc.slug,
-      label: formatMeetingDateLabel(doc.meetingDate),
-    },
+    schedules: view.schedules,
+    source: view.source,
+    appliesToMonth: view.appliesToMonth,
+    monthLabel: view.monthLabel,
   };
 }

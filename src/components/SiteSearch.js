@@ -171,7 +171,7 @@ export default function SiteSearch() {
               Ask Sunrise Semester
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              Find pages, meetings, and answers about AA or this group
+              Sunrise Semester, AA, and recovery questions only
             </Typography>
           </Box>
           <IconButton aria-label="Close search" onClick={handleClose} size="small">
@@ -314,7 +314,7 @@ export default function SiteSearch() {
               fullWidth
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about meetings, AA, or anything on this site…"
+              placeholder="Ask about meetings, AA, or recovery…"
               disabled={busy}
               size="small"
               slotProps={{

@@ -1,6 +1,6 @@
 import GroupServiceHub from "@/components/GroupServiceHub";
 import {
-  getLatestPublishedCommitmentSchedules,
+  getCommitmentScheduleViews,
   listPublishedBusinessMeetings,
 } from "@/lib/businessMeetings";
 import { getWeeklyServiceSchedule } from "@/lib/weeklyService";
@@ -18,7 +18,7 @@ export const metadata = pageSocialMetadata({
 export default async function BusinessMeetingsPage() {
   const [weeklyService, commitment, meetings] = await Promise.all([
     getWeeklyServiceSchedule().catch(() => null),
-    getLatestPublishedCommitmentSchedules().catch(() => ({ schedules: [], source: null })),
+    getCommitmentScheduleViews().catch(() => ({ current: null, next: null })),
     listPublishedBusinessMeetings().catch(() => []),
   ]);
 

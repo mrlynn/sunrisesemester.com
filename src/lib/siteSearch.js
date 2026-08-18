@@ -1,142 +1,13 @@
 import { loadSiteSearchCorpus } from "@/lib/siteSearchKnowledge";
+import { tokenizeQuery } from "@/lib/siteSearchTopic";
 
-const STOP = new Set([
-  "the",
-  "and",
-  "for",
-  "are",
-  "but",
-  "not",
-  "you",
-  "all",
-  "can",
-  "had",
-  "her",
-  "was",
-  "one",
-  "our",
-  "out",
-  "day",
-  "get",
-  "has",
-  "him",
-  "his",
-  "how",
-  "man",
-  "now",
-  "old",
-  "see",
-  "two",
-  "way",
-  "who",
-  "did",
-  "its",
-  "let",
-  "put",
-  "say",
-  "she",
-  "too",
-  "use",
-  "what",
-  "when",
-  "where",
-  "which",
-  "with",
-  "this",
-  "that",
-  "from",
-  "have",
-  "about",
-  "into",
-  "than",
-  "them",
-  "then",
-  "there",
-  "these",
-  "they",
-  "were",
-  "will",
-  "your",
-  "should",
-  "would",
-  "could",
-  "a",
-  "an",
-  "as",
-  "at",
-  "be",
-  "by",
-  "do",
-  "if",
-  "in",
-  "is",
-  "it",
-  "of",
-  "on",
-  "or",
-  "so",
-  "to",
-  "up",
-]);
-
-/** Light synonym expansion so casual visitor phrasing hits the right docs. */
-const SYNONYMS = {
-  zoom: ["meetings", "join"],
-  meeting: ["meetings", "schedule", "zoom"],
-  meetings: ["schedule", "zoom"],
-  schedule: ["meetings", "time"],
-  time: ["meetings", "schedule"],
-  join: ["meetings", "zoom", "newcomer"],
-  first: ["newcomer"],
-  beginner: ["newcomer"],
-  visitor: ["newcomer"],
-  newbie: ["newcomer"],
-  new: ["newcomer"],
-  expect: ["newcomer"],
-  expecting: ["newcomer"],
-  story: ["stories"],
-  stories: ["story"],
-  pdf: ["resources"],
-  format: ["resources", "meetings"],
-  chair: ["servant", "roles", "sherpa"],
-  host: ["sherpa", "zoom"],
-  sherpa: ["host", "guide"],
-  alcohol: ["aa", "drinking"],
-  alcoholic: ["aa"],
-  alcoholism: ["aa"],
-  drinking: ["aa", "newcomer"],
-  step: ["steps", "literature"],
-  steps: ["literature", "aa"],
-  big: ["literature", "book"],
-  book: ["literature"],
-  promise: ["promises", "literature"],
-  business: ["group", "service", "minutes"],
-  minutes: ["business", "meetings"],
-  concern: ["report"],
-  safety: ["report"],
-  email: ["subscribe"],
-  newsletter: ["subscribe"],
-  account: ["member"],
-  login: ["member"],
-  register: ["member"],
-};
-
-export function tokenizeQuery(query) {
-  const raw = String(query || "")
-    .toLowerCase()
-    .replace(/['’]/g, "")
-    .split(/[^a-z0-9]+/)
-    .filter((t) => t.length > 1 && !STOP.has(t));
-
-  const expanded = new Set(raw);
-  for (const token of raw) {
-    const syns = SYNONYMS[token];
-    if (syns) {
-      for (const s of syns) expanded.add(s);
-    }
-  }
-  return [...expanded];
-}
+export {
+  OFF_TOPIC_MATCHES,
+  OFF_TOPIC_REPLY,
+  isOnTopicQuery,
+  priorUserTurnWasOnTopic,
+  tokenizeQuery,
+} from "@/lib/siteSearchTopic";
 
 function scoreDoc(doc, tokens) {
   if (!tokens.length) return 0;
@@ -220,9 +91,14 @@ export async function buildSiteSearchContext(query) {
 
 export const SITE_SEARCH_SYSTEM_PROMPT = `You are the helpful search assistant for Sunrise Semester, an online Alcoholics Anonymous (AA) group website.
 
-Your job:
+Scope (hard limit):
+- ONLY answer questions about Sunrise Semester (this website and group), Alcoholics Anonymous, or drug and/or alcohol addiction recovery.
+- If a question is outside that scope (cooking, weather, homework, sports, general trivia, unrelated how-tos, etc.), do NOT answer it. Refuse briefly and point the visitor back to meetings, newcomer info, or another page on this site.
+- Never provide recipes, general knowledge, or help that is unrelated to recovery or this group — even if you know the answer.
+
+Your job when in scope:
 1. Help visitors find the right pages, features, meetings, stories, resources, or events on this site.
-2. Answer plain questions about AA and about this group, grounded in the provided context.
+2. Answer plain questions about AA / recovery and about this group, grounded in the provided context.
 3. Prefer short, warm, practical answers. Lead with the direct answer, then offer 1–3 relevant links using markdown like [Meetings](/meetings).
 
 Rules:

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test src/lib/reports.test.js src/lib/parseBusinessMeetingNotes.test.js",
+    "test": "node --test src/lib/reports.test.js src/lib/parseBusinessMeetingNotes.test.js src/lib/businessMeetingMonth.test.js src/lib/siteSearch.test.js src/lib/meetingTopics.test.js",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
     "seed:editor-user": "node --env-file=.env.local scripts/seed-editor-user.mjs",
     "seed:site-resources": "node --env-file=.env.local scripts/seed-site-resources.mjs"

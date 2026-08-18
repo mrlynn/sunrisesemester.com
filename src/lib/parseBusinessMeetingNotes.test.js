@@ -147,6 +147,7 @@ describe("parseBusinessMeetingNotes", () => {
     assert.equal(result.value.slug, "2026-07");
     assert.equal(result.value.commitmentSchedules.length, 1);
     assert.equal(result.value.commitmentSchedules[0].rows.length, 8);
+    assert.equal(result.value.commitmentSchedules[0].appliesToMonth, "2026-08");
     assert.equal(result.value.oldBusiness.includes("No old business"), true);
 
     const treasurer = result.value.sections.find((s) => /treasurer/i.test(s.title));

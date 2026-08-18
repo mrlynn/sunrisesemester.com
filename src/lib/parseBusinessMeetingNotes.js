@@ -3,7 +3,10 @@
  * Handles headings, Motion/Second/Result lines, and Day/Chair/Sherpa tables.
  */
 
-import { meetingSlugFromDate } from "./businessMeetingShared.js";
+import {
+  defaultAppliesToMonth,
+  meetingSlugFromDate,
+} from "./businessMeetingShared.js";
 
 const SPECIAL_HEADINGS = new Map([
   ["chair rotation", "schedule"],
@@ -241,6 +244,7 @@ export function parseChairSchedule(body) {
   if (rows.length === 0) return null;
   return {
     title: "Chair Rotation",
+    appliesToMonth: "",
     columns,
     rows,
   };
@@ -371,6 +375,7 @@ export function parseBusinessMeetingNotes(notes, options = {}) {
   }
 
   const meetingDate = options.meetingDate || "";
+  const appliesToMonth = meetingDate ? defaultAppliesToMonth(meetingDate) : "";
   const value = {
     meetingDate,
     slug: meetingDate ? meetingSlugFromDate(meetingDate) : "",
@@ -388,7 +393,10 @@ export function parseBusinessMeetingNotes(notes, options = {}) {
     },
     signOff: "",
     attachedReports: [],
-    commitmentSchedules,
+    commitmentSchedules: commitmentSchedules.map((s) => ({
+      ...s,
+      appliesToMonth: s.appliesToMonth || appliesToMonth,
+    })),
   };
 
   if (sections.length === 0 && !oldBusiness && !newBusiness && commitmentSchedules.length === 0) {
