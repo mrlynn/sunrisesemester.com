@@ -129,6 +129,23 @@ export default function SiteFooter() {
                     Resources
                   </Typography>
                 </NextLink>
+                <NextLink href="/safety" style={{ textDecoration: "none" }}>
+                  <Typography
+                    component="span"
+                    sx={{
+                      color: "#ff6b35",
+                      fontWeight: 600,
+                      transition: "all 0.2s ease",
+                      display: "inline-block",
+                      fontSize: "0.95rem",
+                      "&:hover": {
+                        color: "#ff5a1f",
+                      },
+                    }}
+                  >
+                    Safety
+                  </Typography>
+                </NextLink>
                 <NextLink href="/subscribe" style={{ textDecoration: "none" }}>
                   <Typography
                     component="span"

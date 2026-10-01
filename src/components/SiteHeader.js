@@ -26,6 +26,7 @@ const links = [
   { href: "/events", label: "Events" },
   { href: "/business-meetings", label: "Group service" },
   { href: "/resources", label: "Resources" },
+  { href: "/safety", label: "Safety" },
 ];
 
 export default function SiteHeader() {
