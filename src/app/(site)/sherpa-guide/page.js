@@ -1,9 +1,9 @@
 import SherpaGuidePage from "@/components/SherpaGuidePage";
 
 export const metadata = {
-  title: "Sherpa Guide: Zoom Administration",
+  title: "Sherpa Guide: Technical Meeting Moderation",
   description:
-    "Comprehensive guide for Sherpas on Zoom administration, security, and ensuring trouble-free meeting experiences.",
+    "Version 3.0 guide for Sunrise Semester Sherpas: claim host with the host key, use Host Tools, run the meeting timeline, and respond to Zoom disruptions.",
 };
 
 export default function SherpaGuide() {

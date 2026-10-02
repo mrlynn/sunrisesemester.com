@@ -3,11 +3,13 @@ import { jwtVerify } from "jose";
 import { COOKIE_NAME } from "./lib/auth";
 import { MEMBER_COOKIE_NAME } from "./lib/memberAuth";
 import { canAccessAdminPath, defaultAdminPath, isRole } from "./lib/roles";
+import { ADMIN_PUBLIC_PATHS } from "./lib/adminPublicPaths";
 
 const STATIC_ASSET_PATH =
   /\.(?:woff2?|ttf|otf|eot|png|jpe?g|gif|webp|svg|ico|css|js|map)$/i;
 
-const MEMBER_PUBLIC_PATHS = new Set(["/member/login", "/member/register"]);
+const MEMBER_PUBLIC_PATHS = new Set(["/member", "/member/login", "/member/register"]);
+const MEMBER_PROTECTED_PATHS = ["/member/settings"];
 
 function redirectToAdminLogin(request) {
   const res = NextResponse.redirect(new URL("/admin", request.url));
@@ -43,6 +45,12 @@ export async function middleware(request) {
     if (MEMBER_PUBLIC_PATHS.has(pathname)) {
       return NextResponse.next();
     }
+    const needsAuth = MEMBER_PROTECTED_PATHS.some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
+    );
+    if (!needsAuth) {
+      return NextResponse.next();
+    }
     const memberToken = request.cookies.get(MEMBER_COOKIE_NAME)?.value;
     if (!memberToken) {
       return redirectToMemberLogin(request);
@@ -62,8 +70,9 @@ export async function middleware(request) {
     return NextResponse.next();
   }
 
-  // Sign-in page must stay reachable without a session (avoid redirect loops).
-  if (pathname === "/admin") {
+  // Sign-in, forgot-password, and reset-password must stay reachable without
+  // a session (avoid redirect loops for someone who is, by definition, locked out).
+  if (ADMIN_PUBLIC_PATHS.has(pathname)) {
     return NextResponse.next();
   }
 

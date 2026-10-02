@@ -7,7 +7,7 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import HomeHeroActions from "@/components/HomeHeroActions";
 
-export default function SunriseHero({ title, subtitle }) {
+export default function SunriseHero({ title, subtitle, showDailyReflectionLink = false }) {
   const { scrollY } = useScroll();
   const sunY = useTransform(scrollY, [0, 600], [0, -200]);
   const skyOpacity = useTransform(scrollY, [0, 400], [1, 0.3]);
@@ -343,7 +343,7 @@ export default function SunriseHero({ title, subtitle }) {
               transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
               style={{ display: "flex", justifyContent: "inherit" }}
             >
-              <HomeHeroActions />
+              <HomeHeroActions showDailyReflectionLink={showDailyReflectionLink} />
             </motion.div>
           </Box>
         </Container>

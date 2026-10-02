@@ -27,11 +27,14 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import {
   defaultAgendaSections,
+  defaultAppliesToMonth,
   emptyCommitmentSchedule,
   emptyScheduleRow,
+  formatMonthLabel,
   meetingSlugFromDate,
   STANDARD_SCHEDULE_DAYS,
 } from "@/lib/businessMeetingShared";
+import { parseBusinessMeetingNotes } from "@/lib/parseBusinessMeetingNotes";
 
 function toDateInputValue(date) {
   if (!date) return "";
@@ -96,6 +99,9 @@ function normalizeInitial(initial) {
     commitmentSchedules: Array.isArray(initial.commitmentSchedules)
       ? initial.commitmentSchedules.map((s) => ({
           title: s.title || "",
+          appliesToMonth:
+            s.appliesToMonth ||
+            (initial.meetingDate ? defaultAppliesToMonth(initial.meetingDate) : ""),
           columns: [...(s.columns || [])],
           rows: (s.rows || []).map((row) => ({
             day: row.day || "",
@@ -147,6 +153,8 @@ export default function BusinessMeetingForm({ initial, mode }) {
   const [message, setMessage] = React.useState(null);
   const [error, setError] = React.useState(null);
   const [busy, setBusy] = React.useState(false);
+  const [pasteNotes, setPasteNotes] = React.useState("");
+  const [pasteWarnings, setPasteWarnings] = React.useState([]);
 
   function set(patch) {
     setState((s) => ({ ...s, ...patch }));
@@ -154,11 +162,68 @@ export default function BusinessMeetingForm({ initial, mode }) {
 
   function onMeetingDateChange(e) {
     const meetingDate = e.target.value;
-    const patch = { meetingDate };
-    if (!slugTouched && meetingDate) {
-      patch.slug = meetingSlugFromDate(meetingDate);
+    setState((s) => {
+      const oldDefault = s.meetingDate ? defaultAppliesToMonth(s.meetingDate) : "";
+      const newDefault = meetingDate ? defaultAppliesToMonth(meetingDate) : "";
+      const patch = { meetingDate };
+      if (!slugTouched && meetingDate) {
+        patch.slug = meetingSlugFromDate(meetingDate);
+      }
+      return {
+        ...s,
+        ...patch,
+        commitmentSchedules: s.commitmentSchedules.map((sched) => ({
+          ...sched,
+          appliesToMonth:
+            !sched.appliesToMonth || sched.appliesToMonth === oldDefault
+              ? newDefault
+              : sched.appliesToMonth,
+        })),
+      };
+    });
+  }
+
+  function applyPastedNotes() {
+    setError(null);
+    setMessage(null);
+    setPasteWarnings([]);
+    const result = parseBusinessMeetingNotes(pasteNotes, {
+      meetingDate: state.meetingDate || undefined,
+    });
+    if (!result.ok) {
+      setError(result.error);
+      return;
     }
-    set(patch);
+
+    const parsed = result.value;
+    setState((s) => {
+      const meetingDate = s.meetingDate || parsed.meetingDate;
+      const slug = slugTouched
+        ? s.slug
+        : parsed.slug || (meetingDate ? meetingSlugFromDate(meetingDate) : s.slug);
+      return {
+        ...s,
+        meetingDate,
+        slug,
+        openingNotes: parsed.openingNotes || s.openingNotes,
+        sections: parsed.sections.length > 0 ? parsed.sections : s.sections,
+        oldBusiness: parsed.oldBusiness,
+        newBusiness: parsed.newBusiness,
+        adjournment: {
+          movedBy: parsed.adjournment.movedBy || s.adjournment.movedBy,
+          time: parsed.adjournment.time || s.adjournment.time,
+          closingNotes: parsed.adjournment.closingNotes || s.adjournment.closingNotes,
+        },
+        commitmentSchedules:
+          parsed.commitmentSchedules.length > 0
+            ? parsed.commitmentSchedules
+            : s.commitmentSchedules,
+      };
+    });
+    setPasteWarnings(result.warnings || []);
+    setMessage(
+      "Notes parsed into the form. Review the fields below, then save. Nothing is published until you save.",
+    );
   }
 
   function updateSection(index, patch) {
@@ -228,7 +293,10 @@ export default function BusinessMeetingForm({ initial, mode }) {
   function addSchedule() {
     setState((s) => ({
       ...s,
-      commitmentSchedules: [...s.commitmentSchedules, emptyCommitmentSchedule(4)],
+      commitmentSchedules: [
+        ...s.commitmentSchedules,
+        emptyCommitmentSchedule(4, s.meetingDate ? defaultAppliesToMonth(s.meetingDate) : ""),
+      ],
     }));
   }
 
@@ -405,6 +473,45 @@ export default function BusinessMeetingForm({ initial, mode }) {
 
   return (
     <Stack spacing={3}>
+      <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 } }}>
+        <Stack spacing={2}>
+          <Typography variant="h6">Paste notes to import</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Paste a secretary write-up with headings like <em>Chair Rotation</em>,{" "}
+            <em>Treasurer&apos;s Report</em>, <em>Old Business</em>, <em>New Business</em>,{" "}
+            <em>Action Items</em>, and <em>Adjournment</em>. Lines such as{" "}
+            <code>Motion:</code> / <code>Second:</code> / <code>Result:</code> are picked up
+            automatically. Review everything below before saving.
+          </Typography>
+          <TextField
+            label="Meeting notes"
+            fullWidth
+            multiline
+            minRows={8}
+            value={pasteNotes}
+            onChange={(e) => setPasteNotes(e.target.value)}
+            placeholder="Paste the full meeting notes here…"
+          />
+          <Button
+            variant="outlined"
+            onClick={applyPastedNotes}
+            disabled={!pasteNotes.trim()}
+            sx={{ alignSelf: "flex-start" }}
+          >
+            Parse into form
+          </Button>
+          {pasteWarnings.length > 0 ? (
+            <Alert severity="warning">
+              {pasteWarnings.map((w) => (
+                <div key={w}>{w}</div>
+              ))}
+            </Alert>
+          ) : null}
+          {error ? <Alert severity="error">{error}</Alert> : null}
+          {message ? <Alert severity="success">{message}</Alert> : null}
+        </Stack>
+      </Paper>
+
       <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 } }}>
         <Stack spacing={2}>
           <Typography variant="h6">Meeting details</Typography>
@@ -651,8 +758,8 @@ export default function BusinessMeetingForm({ initial, mode }) {
 
       <Typography variant="h6">Commitment schedules</Typography>
       <Typography variant="body2" color="text.secondary">
-        Add one or more tables (monthly chair, sherpa, greeter, etc.). Column headers and row count
-        are fully flexible.
+        Add one or more tables (monthly chair, sherpa, greeter, etc.). These apply to the month
+        after the business meeting by default (second Tuesday sets next month’s commitments).
       </Typography>
       {state.commitmentSchedules.map((sched, schedIndex) => (
         <Paper key={schedIndex} variant="outlined" sx={{ p: 2, overflow: "auto" }}>
@@ -672,14 +779,33 @@ export default function BusinessMeetingForm({ initial, mode }) {
                 <DeleteOutlineIcon />
               </IconButton>
             </Stack>
-            <TextField
-              label="Schedule title"
-              fullWidth
-              placeholder="JANUARY 2023 SCHEDULE"
-              value={sched.title}
-              onChange={(e) => updateSchedule(schedIndex, { title: e.target.value })}
-            />
-            <Stack direction="row" spacing={1} flexWrap="wrap">
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+              <TextField
+                label="Schedule title"
+                fullWidth
+                placeholder="JANUARY 2023 SCHEDULE"
+                value={sched.title}
+                onChange={(e) => updateSchedule(schedIndex, { title: e.target.value })}
+              />
+              <TextField
+                label="Applies to month"
+                type="month"
+                value={sched.appliesToMonth || ""}
+                onChange={(e) =>
+                  updateSchedule(schedIndex, { appliesToMonth: e.target.value })
+                }
+                InputLabelProps={{ shrink: true }}
+                helperText={
+                  sched.appliesToMonth
+                    ? `Shown as the ${formatMonthLabel(sched.appliesToMonth)} schedule`
+                    : state.meetingDate
+                      ? `Defaults to ${formatMonthLabel(defaultAppliesToMonth(state.meetingDate))}`
+                      : "Set the meeting date to default this"
+                }
+                sx={{ minWidth: { sm: 200 } }}
+              />
+            </Stack>
+            <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
               <Button size="small" startIcon={<AddIcon />} onClick={() => addScheduleColumn(schedIndex)}>
                 Add column
               </Button>

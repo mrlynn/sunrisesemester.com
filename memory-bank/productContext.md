@@ -8,8 +8,3 @@
 - Calm, welcoming, minimal friction.
 - Respect anonymity and privacy (especially for interactive features).
 - Mobile-first and accessible by default.
-
-### Weekly puzzle feature (current)
-- Provide a lightweight weekly reason to return to the site.
-- Keep identity privacy-first (optional display name; no email/password required).
-

@@ -24,11 +24,10 @@ const StorySchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-StorySchema.pre("validate", function preValidate(next) {
+StorySchema.pre("validate", function preValidate() {
   if (!this.slug && this.title) {
     this.slug = slugify(this.title);
   }
-  next();
 });
 
 export default mongoose.models.Story || mongoose.model("Story", StorySchema);

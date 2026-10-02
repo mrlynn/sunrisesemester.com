@@ -7,28 +7,33 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test src/lib/reports.test.js src/lib/parseBusinessMeetingNotes.test.js src/lib/businessMeetingMonth.test.js src/lib/siteSearch.test.js src/lib/meetingTopics.test.js",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
-    "seed:crossword-bank": "node --env-file=.env.local scripts/seed-crossword-bank.mjs",
-    "seed:editor-user": "node --env-file=.env.local scripts/seed-editor-user.mjs"
+    "seed:editor-user": "node --env-file=.env.local scripts/seed-editor-user.mjs",
+    "seed:site-resources": "node --env-file=.env.local scripts/seed-site-resources.mjs"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.27",
+    "@ai-sdk/react": "^4.0.51",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@jaredreisinger/react-crossword": "^5.2.0",
     "@mui/icons-material": "^9.0.0",
     "@mui/material": "^9.0.0",
     "@mui/material-nextjs": "^9.0.0",
+    "@vercel/blob": "^2.6.1",
+    "ai": "^7.0.48",
     "jose": "^6.2.2",
     "mongoose": "^9.5.0",
     "motion": "^12.38.0",
     "next": "16.2.4",
+    "nodemailer": "^9.0.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1",
-    "resend": "^6.12.4"
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@types/nodemailer": "^8.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.4"
   }

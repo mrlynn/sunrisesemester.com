@@ -62,8 +62,7 @@ export default function MemberRegisterForm() {
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
               Create an account to share your contact details and sobriety anniversary with the
-              home group. You control what is public on the site versus visible only to group
-              editors.
+              home group. Browsing the site does not require registration.
             </Typography>
             {error ? <Alert severity="error">{error}</Alert> : null}
             <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
@@ -82,6 +81,10 @@ export default function MemberRegisterForm() {
                 autoComplete="family-name"
               />
             </Stack>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: -1.5 }}>
+              This stays private by default. Once you&rsquo;re signed in, Settings lets you choose
+              — field by field — what&rsquo;s public and what stays visible only to the group.
+            </Typography>
             <TextField
               name="email"
               label="Email"
@@ -114,6 +117,10 @@ export default function MemberRegisterForm() {
               Already registered?{" "}
               <Link href="/member/login" style={{ color: "#ff6b35", fontWeight: 600 }}>
                 Sign in
+              </Link>
+              {" · "}
+              <Link href="/member" style={{ color: "#ff6b35", fontWeight: 600 }}>
+                Member account home
               </Link>
             </Typography>
           </Stack>

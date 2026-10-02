@@ -39,6 +39,8 @@ const ScheduleRowSchema = new mongoose.Schema(
 const CommitmentScheduleSchema = new mongoose.Schema(
   {
     title: { type: String, default: "" },
+    /** Calendar month this schedule covers, YYYY-MM (usually meeting month + 1). */
+    appliesToMonth: { type: String, default: "" },
     columns: [{ type: String, default: "" }],
     rows: [ScheduleRowSchema],
   },

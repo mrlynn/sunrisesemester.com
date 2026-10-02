@@ -1,12 +1,14 @@
 import EventsPage from "@/components/EventsPage";
 import { listAllEvents } from "@/lib/events";
+import { pageSocialMetadata } from "@/lib/ogMetadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
+export const metadata = pageSocialMetadata({
   title: "Events",
   description: "Upcoming events and announcements from Sunrise Semester.",
-};
+  path: "/events",
+});
 
 export default async function EventsRoute() {
   const raw = await listAllEvents();

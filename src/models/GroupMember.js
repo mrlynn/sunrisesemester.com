@@ -33,9 +33,14 @@ const GroupMemberSchema = new mongoose.Schema(
     anniversaryNote: { type: String, default: "" },
     visibility: { type: VisibilitySchema, default: () => ({}) },
     active: { type: Boolean, default: true },
+    resetTokenHash: { type: String, default: null },
+    resetTokenExpiresAt: { type: Date, default: null },
+    resetRequestedAt: { type: Date, default: null },
   },
   { timestamps: true },
 );
+
+GroupMemberSchema.index({ resetTokenHash: 1 }, { sparse: true });
 
 export const MEMBER_VISIBILITY = VISIBILITY;
 

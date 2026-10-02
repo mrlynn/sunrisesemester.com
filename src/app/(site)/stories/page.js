@@ -1,13 +1,15 @@
 import StoriesIndex from "@/components/StoriesIndex";
 import { listPublishedStories } from "@/lib/stories";
+import { pageSocialMetadata } from "@/lib/ogMetadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
+export const metadata = pageSocialMetadata({
   title: "Stories",
   description:
     "Reflections and shares from members of the Sunrise Semester home group of Alcoholics Anonymous.",
-};
+  path: "/stories",
+});
 
 export default async function StoriesIndexPage() {
   const raw = await listPublishedStories();

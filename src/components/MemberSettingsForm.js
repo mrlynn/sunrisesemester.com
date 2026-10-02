@@ -149,14 +149,21 @@ export default function MemberSettingsForm() {
               >
                 My group profile
               </Typography>
-              <Button type="button" variant="outlined" onClick={logout} size="small">
-                Sign out
-              </Button>
+              <Stack direction="row" spacing={1}>
+                <Button type="button" variant="text" onClick={() => router.push("/member")} size="small">
+                  Account home
+                </Button>
+                <Button type="button" variant="outlined" onClick={logout} size="small">
+                  Sign out
+                </Button>
+              </Stack>
             </Stack>
 
             <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
               Update your contact details and sobriety anniversary. For each field, choose
-              whether it appears on the public site or is visible only to group editors.
+              whether it appears on the public site, or stays visible only to the small
+              number of officers who manage the site (General Chair, Secretary, and other
+              editors) — never to the public.
             </Typography>
 
             {message ? <Alert severity="success">{message}</Alert> : null}

@@ -76,7 +76,7 @@ function NavLink({ href, label, subLabel, direction }) {
   );
 }
 
-export default function DailyReflection({ reflection, variant = "section", weeklyPuzzle = null }) {
+export default function DailyReflection({ reflection, variant = "section" }) {
   if (!reflection) return null;
 
   const cleanedQuote = smartQuote(reflection.quote);
@@ -84,10 +84,12 @@ export default function DailyReflection({ reflection, variant = "section", weekl
 
   return (
     <Box
+      id={isStandalone ? undefined : "daily-reflection"}
       sx={{
         position: "relative",
         overflow: "hidden",
         py: { xs: 8, md: 12 },
+        scrollMarginTop: { xs: 80, md: 96 },
         background:
           "linear-gradient(180deg, #fff4d6 0%, #ffe4b8 50%, #ffcfa1 100%)",
       }}
@@ -278,59 +280,6 @@ export default function DailyReflection({ reflection, variant = "section", weekl
               </Typography>
             </Box>
           </motion.div>
-        ) : null}
-
-        {weeklyPuzzle?.slug ? (
-          <Box
-            sx={{
-              mt: { xs: 4, md: 5 },
-              mx: "auto",
-              maxWidth: 520,
-              textAlign: "center",
-              p: { xs: 2.5, md: 3 },
-              borderRadius: 3,
-              background: "rgba(255, 255, 255, 0.55)",
-              border: "1px solid rgba(91, 44, 111, 0.12)",
-            }}
-          >
-            <Typography
-              sx={{
-                fontSize: "0.72rem",
-                fontWeight: 700,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "#8a3a52",
-                mb: 1,
-              }}
-            >
-              Weekly crossword
-            </Typography>
-            <Typography sx={{ color: "#2c1a3d", fontSize: "0.98rem", mb: 2, lineHeight: 1.5 }}>
-              {weeklyPuzzle.reflectionThemed && weeklyPuzzle.reflectionSummary
-                ? weeklyPuzzle.reflectionSummary
-                : "Take a few minutes with this week\u2019s puzzle."}
-            </Typography>
-            <Box
-              component={Link}
-              href={`/puzzles/${encodeURIComponent(weeklyPuzzle.slug)}`}
-              sx={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 1,
-                textDecoration: "none",
-                px: 3,
-                py: 1.25,
-                borderRadius: 8,
-                background: "linear-gradient(135deg, #5b2c6f 0%, #c43c68 100%)",
-                color: "#ffffff",
-                fontWeight: 700,
-                fontSize: "0.9rem",
-                "&:hover": { opacity: 0.92 },
-              }}
-            >
-              Solve this week&apos;s crossword
-            </Box>
-          </Box>
         ) : null}
 
         <motion.div

@@ -10,28 +10,34 @@ import SunriseHero from "@/components/SunriseHero";
 import DailyReflection from "@/components/DailyReflection";
 import { getLanding } from "@/lib/landing";
 import { getTodaysReflection, serializeReflection } from "@/lib/reflections";
-import { getCurrentPublishedPuzzle, serializePuzzleSummary } from "@/lib/puzzles";
 import { listUpcomingEvents } from "@/lib/events";
 import { formatEventDate } from "@/lib/eventDates";
 
 export const dynamic = "force-dynamic";
+
+// Title/description/OG are already set well by the root layout's defaults —
+// only add the canonical URL here to avoid duplicating (and mismatching)
+// them via the title template.
+export const metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   const landing = await getLanding();
   const now = new Date();
   const reflectionDoc = await getTodaysReflection().catch(() => null);
   const reflection = serializeReflection(reflectionDoc, now);
-  const weeklyPuzzleDoc = await getCurrentPublishedPuzzle().catch(() => null);
-  const weeklyPuzzle = serializePuzzleSummary(weeklyPuzzleDoc);
   const upcomingEvents = await listUpcomingEvents().catch(() => []);
 
   return (
     <Box>
-      <SunriseHero title={landing.heroTitle} subtitle={landing.heroSubtitle} />
+      <SunriseHero
+        title={landing.heroTitle}
+        subtitle={landing.heroSubtitle}
+        showDailyReflectionLink={Boolean(reflection)}
+      />
 
-      {reflection ? (
-        <DailyReflection reflection={reflection} weeklyPuzzle={weeklyPuzzle} />
-      ) : null}
+      {reflection ? <DailyReflection reflection={reflection} /> : null}
 
       {upcomingEvents.length > 0 ? (
         <Container maxWidth="md" sx={{ py: { xs: 6, md: 8 } }}>

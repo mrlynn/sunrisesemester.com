@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import StoryDetail from "@/components/StoryDetail";
 import { getStoryBySlug } from "@/lib/stories";
+import { pageSocialMetadata } from "@/lib/ogMetadata";
 
 export const dynamic = "force-dynamic";
 
@@ -10,10 +11,17 @@ export async function generateMetadata({ params }) {
   if (!story) {
     return { title: "Story" };
   }
-  return {
+  const description =
+    story.excerpt ||
+    `A story from the Sunrise Semester home group of Alcoholics Anonymous.`;
+  return pageSocialMetadata({
     title: story.title,
-    description: story.excerpt || undefined,
-  };
+    description,
+    image: story.coverImage,
+    imageAlt: story.title,
+    type: "article",
+    path: `/stories/${story.slug}`,
+  });
 }
 
 export default async function StoryPage({ params }) {

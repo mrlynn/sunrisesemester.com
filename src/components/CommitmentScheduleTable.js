@@ -7,9 +7,11 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { formatMonthLabel } from "@/lib/businessMeetingShared";
 
 export default function CommitmentScheduleTable({ schedule }) {
   if (!schedule?.columns?.length) return null;
+  const monthLabel = formatMonthLabel(schedule.appliesToMonth);
   return (
     <Box sx={{ overflowX: "auto" }}>
       {schedule.title ? (
@@ -20,11 +22,16 @@ export default function CommitmentScheduleTable({ schedule }) {
             fontWeight: 800,
             letterSpacing: "0.06em",
             textTransform: "uppercase",
-            mb: 1.5,
+            mb: monthLabel ? 0.5 : 1.5,
             color: "#5b2c6f",
           }}
         >
           {schedule.title}
+        </Typography>
+      ) : null}
+      {monthLabel ? (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+          Applies to {monthLabel}
         </Typography>
       ) : null}
       <Table

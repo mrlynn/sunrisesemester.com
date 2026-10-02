@@ -45,15 +45,19 @@ Copy `.env.example` to `.env.local` and fill in values. Core variables:
 | `AUTH_SECRET` | Editor session JWT signing |
 | `NEXT_PUBLIC_BASE_URL` | Public site URL for email links |
 
-### Mailing list (Resend)
+### Email (Gmail SMTP / App Password)
 
-The subscribe flow uses [Resend](https://resend.com) for confirmation and group-update emails.
+Subscribe confirmations, group updates, and anonymous report notifications use Gmail SMTP via nodemailer.
 
 | Variable | Purpose |
 |----------|---------|
-| `RESEND_API_KEY` | Resend API key |
-| `RESEND_FROM_EMAIL` | Verified sender, e.g. `Sunrise Semester <updates@sunrisesemester.com>` |
+| `SMTP_HOST` | Usually `smtp.gmail.com` |
+| `SMTP_PORT` | `465` (SSL) or `587` (STARTTLS) |
+| `SMTP_USER` | Gmail address that owns the App Password |
+| `SMTP_PASS` | Google App Password (16 characters, not the normal login password) |
+| `FROM_EMAIL` | From header, e.g. `Sunrise Semester <sunrisesemesteraa@gmail.com>` |
+| `REPORTS_TO_EMAIL` | Optional; defaults to `sunrisesemesteraa@gmail.com` |
 
-**Production checklist:** Add and verify your domain in the Resend dashboard, then add the SPF and DKIM DNS records Resend provides. Until the domain is verified, confirmation and broadcast emails will not send.
+**Setup:** Google Account → Security → 2-Step Verification → App passwords → create one for Mail, then set `SMTP_PASS` to that value in Vercel / `.env.local`.
 
 # sunrisesemester.com

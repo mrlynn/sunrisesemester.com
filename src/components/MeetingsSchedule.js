@@ -14,72 +14,19 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import CheckIcon from "@mui/icons-material/Check";
 import ArticleIcon from "@mui/icons-material/Article";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import Link from "next/link";
 import WeeklyServiceSection from "@/components/WeeklyServiceSection";
+import { ZOOM_ID, ZOOM_URL, meetings } from "@/lib/meetingsSchedule";
 
-const ZOOM_ID = "901964988";
-const ZOOM_URL =
-  "https://us02web.zoom.us/j/901964988?pwd=QkhEY1FFOUF2b1AzMmRwZ0VtejdVQT09";
+function formatHref(format, formatUrls) {
+  const url = formatUrls?.[format.key];
+  return url || "/resources#meeting-formats";
+}
 
-const meetings = [
-  {
-    id: "weekdays",
-    label: "Monday – Friday",
-    shortLabel: "M–F",
-    title: "Daily Sunrise",
-    time: "7:15 – 8:15 AM",
-    blurb: "Start every weekday in fellowship. One hour of open discussion to set the tone of the day.",
-    gradient: "linear-gradient(135deg, #ff6b35 0%, #ffa751 60%, #ffd89b 100%)",
-    accent: "#ff6b35",
-    days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-    formats: [
-      { label: "Mon", url: "https://drive.google.com/file/d/1UZ_xSVDqSIQ3mWrug9KSZogURJJ_250x/view?usp=drive_link" },
-      { label: "Tue", url: "https://drive.google.com/file/d/1mlSNb3fLyoWek9emoushf3Lmy1tH3C_h/view?usp=drive_link" },
-      { label: "Wed", url: "https://drive.google.com/file/d/15N-YdxwgeexTyZZbapZHdLaOG98QGb60/view?usp=drive_link" },
-      { label: "Thu", url: "https://drive.google.com/file/d/1GUy_uNLrzMv9O4quAfAQzc5ktD8cK2kl/view?usp=drive_link" },
-      { label: "Fri", url: "https://drive.google.com/file/d/1JlBJV8x2rDGA7eYnJwPI_BVZYNvd0eFL/view?usp=drive_link" },
-    ],
-  },
-  {
-    id: "saturday-men",
-    label: "Saturday",
-    shortLabel: "Sat",
-    title: "Men's Meeting",
-    time: "8:00 – 9:15 AM",
-    blurb: "Men of the group gather to share experience, strength, and hope.",
-    gradient: "linear-gradient(135deg, #5b2c6f 0%, #c43c68 60%, #ff6b35 100%)",
-    accent: "#c43c68",
-    days: ["Sat"],
-    formats: [
-      { label: "View Format", url: "https://drive.google.com/file/d/1VbKkUJUL0yGkBlHsPULRulqh_GV1SWyd/view?usp=drive_link" },
-    ],
-  },
-  {
-    id: "saturday-women",
-    label: "Saturday",
-    shortLabel: "Sat",
-    title: "Women's Meeting",
-    time: "9:30 AM",
-    blurb: "Women of the group meet immediately after the men's meeting.",
-    gradient: "linear-gradient(135deg, #2d1b4e 0%, #5b2c6f 50%, #c43c68 100%)",
-    accent: "#5b2c6f",
-    days: ["Sat"],
-  },
-  {
-    id: "sunday",
-    label: "Sunday",
-    shortLabel: "Sun",
-    title: "Sunday Morning",
-    time: "8:00 – 9:00 AM",
-    blurb: "Close the week the way we started it — together, in the light.",
-    gradient: "linear-gradient(135deg, #c43c68 0%, #ff6b35 50%, #ffa751 100%)",
-    accent: "#ff8555",
-    days: ["Sun"],
-    formats: [
-      { label: "View Format", url: "https://drive.google.com/file/d/1pMAsv2nX17U_fvyrXWX1Tgz4gBBgVGFS/view?usp=drive_link" },
-    ],
-  },
-];
+function isExternalHref(href) {
+  return typeof href === "string" && /^https?:\/\//i.test(href);
+}
 
 function useCopy() {
   const [copied, setCopied] = React.useState(false);
@@ -310,7 +257,7 @@ function ZoomCard({ onCopy, copied }) {
                 textShadow: "0 2px 20px rgba(0,0,0,0.3)",
               }}
             >
-              917 964 988
+              {ZOOM_ID.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}
             </Typography>
           </Box>
           <Stack spacing={1.5} sx={{ width: { xs: "100%", md: "auto" } }}>
@@ -370,7 +317,77 @@ function ZoomCard({ onCopy, copied }) {
   );
 }
 
-function MeetingCard({ meeting, index }) {
+function TopicChooserCard() {
+  return (
+    <Box
+      sx={{
+        p: { xs: 3, md: 4 },
+        borderRadius: 4,
+        border: "1px solid #f0d8df",
+        background:
+          "linear-gradient(135deg, rgba(196,60,104,0.08) 0%, rgba(255,107,53,0.08) 100%)",
+      }}
+    >
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        spacing={2.5}
+        sx={{ alignItems: { sm: "center" }, justifyContent: "space-between" }}
+      >
+        <Box>
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+            <AutoAwesomeIcon sx={{ color: "#c43c68" }} />
+            <Typography
+              sx={{
+                color: "#c43c68",
+                fontWeight: 800,
+                fontSize: "0.75rem",
+                letterSpacing: "0.16em",
+                textTransform: "uppercase",
+              }}
+            >
+              Chairing a discussion?
+            </Typography>
+          </Stack>
+          <Typography
+            component="h2"
+            sx={{
+              color: "#2d1b4e",
+              fontFamily: "var(--font-serif), Georgia, serif",
+              fontWeight: 800,
+              fontSize: { xs: "1.55rem", md: "1.85rem" },
+              mb: 0.75,
+            }}
+          >
+            Start with a meeting topic.
+          </Typography>
+          <Typography sx={{ color: "#555555", lineHeight: 1.65, maxWidth: 520 }}>
+            Get a ready-to-read opening and three questions, shaped for your meeting.
+          </Typography>
+        </Box>
+        <Button
+          component={Link}
+          href="/meeting-topics"
+          variant="contained"
+          startIcon={<AutoAwesomeIcon />}
+          sx={{
+            flexShrink: 0,
+            textTransform: "none",
+            fontWeight: 800,
+            borderRadius: 8,
+            px: 3,
+            py: 1.25,
+            background: "linear-gradient(135deg, #c43c68 0%, #ff6b35 100%)",
+            boxShadow: "none",
+          }}
+        >
+          Choose a topic
+        </Button>
+      </Stack>
+    </Box>
+  );
+}
+
+function MeetingCard({ meeting, index, formatUrls }) {
   const isWeekday = meeting.id === "weekdays";
 
   return (
@@ -514,36 +531,40 @@ function MeetingCard({ meeting, index }) {
                   Meeting Formats
                 </Typography>
               </Stack>
-              {meeting.formats.map((f) => (
-                <Button
-                  key={f.label}
-                  href={f.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  variant="contained"
-                  fullWidth
-                  startIcon={<ArticleIcon />}
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: 700,
-                    fontSize: "0.9rem",
-                    justifyContent: "flex-start",
-                    borderRadius: 2,
-                    py: 1,
-                    px: 2,
-                    background: "rgba(255,107,53,0.07)",
-                    color: "#1d1d1d",
-                    boxShadow: "none",
-                    "&:hover": {
-                      background: meeting.gradient,
-                      color: "#ffffff",
-                      boxShadow: "0 4px 16px rgba(255,107,53,0.3)",
-                    },
-                  }}
-                >
-                  {f.label} Format
-                </Button>
-              ))}
+              {meeting.formats.map((f) => {
+                const href = formatHref(f, formatUrls);
+                const external = isExternalHref(href);
+                return (
+                  <Button
+                    key={f.key || f.label}
+                    href={href}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
+                    variant="contained"
+                    fullWidth
+                    startIcon={<ArticleIcon />}
+                    sx={{
+                      textTransform: "none",
+                      fontWeight: 700,
+                      fontSize: "0.9rem",
+                      justifyContent: "flex-start",
+                      borderRadius: 2,
+                      py: 1,
+                      px: 2,
+                      background: "rgba(255,107,53,0.07)",
+                      color: "#1d1d1d",
+                      boxShadow: "none",
+                      "&:hover": {
+                        background: meeting.gradient,
+                        color: "#ffffff",
+                        boxShadow: "0 4px 16px rgba(255,107,53,0.3)",
+                      },
+                    }}
+                  >
+                    {f.label} Format
+                  </Button>
+                );
+              })}
             </Box>
           </Stack>
         ) : (
@@ -611,34 +632,38 @@ function MeetingCard({ meeting, index }) {
               </Typography>
               {meeting.formats && (
                 <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", pt: 1.5 }}>
-                  {meeting.formats.map((f) => (
-                    <Button
-                      key={f.label}
-                      href={f.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      size="small"
-                      startIcon={<ArticleIcon />}
-                      sx={{
-                        textTransform: "none",
-                        fontWeight: 600,
-                        fontSize: "0.85rem",
-                        color: meeting.accent,
-                        border: "1.5px solid",
-                        borderColor: meeting.accent,
-                        borderRadius: 6,
-                        px: 2,
-                        py: 0.75,
-                        "&:hover": {
-                          background: meeting.accent,
-                          color: "#ffffff",
+                  {meeting.formats.map((f) => {
+                    const href = formatHref(f, formatUrls);
+                    const external = isExternalHref(href);
+                    return (
+                      <Button
+                        key={f.key || f.label}
+                        href={href}
+                        target={external ? "_blank" : undefined}
+                        rel={external ? "noopener noreferrer" : undefined}
+                        size="small"
+                        startIcon={<ArticleIcon />}
+                        sx={{
+                          textTransform: "none",
+                          fontWeight: 600,
+                          fontSize: "0.85rem",
+                          color: meeting.accent,
+                          border: "1.5px solid",
                           borderColor: meeting.accent,
-                        },
-                      }}
-                    >
-                      {f.label}
-                    </Button>
-                  ))}
+                          borderRadius: 6,
+                          px: 2,
+                          py: 0.75,
+                          "&:hover": {
+                            background: meeting.accent,
+                            color: "#ffffff",
+                            borderColor: meeting.accent,
+                          },
+                        }}
+                      >
+                        {f.label}
+                      </Button>
+                    );
+                  })}
                 </Stack>
               )}
             </Box>
@@ -649,7 +674,7 @@ function MeetingCard({ meeting, index }) {
   );
 }
 
-export default function MeetingsSchedule({ weeklyService }) {
+export default function MeetingsSchedule({ weeklyService, formatUrls = {} }) {
   const { copied, copy, reset } = useCopy();
 
   return (
@@ -658,6 +683,7 @@ export default function MeetingsSchedule({ weeklyService }) {
       <Container maxWidth="md" sx={{ py: { xs: 6, md: 10 } }}>
         <Stack spacing={{ xs: 5, md: 7 }}>
           <ZoomCard onCopy={copy} copied={copied} />
+          <TopicChooserCard />
           {weeklyService ? (
             <Box>
               <WeeklyServiceSection schedule={weeklyService} />
@@ -715,7 +741,7 @@ export default function MeetingsSchedule({ weeklyService }) {
                   key={m.id}
                   sx={m.id === "weekdays" ? { gridColumn: { md: "1 / -1" } } : {}}
                 >
-                  <MeetingCard meeting={m} index={i} />
+                  <MeetingCard meeting={m} index={i} formatUrls={formatUrls} />
                 </Box>
               ))}
             </Box>

@@ -107,8 +107,8 @@ export default function AdminSubscribersManager({
     <Stack spacing={4}>
       {!emailConfigured ? (
         <Alert severity="warning">
-          Set <code>RESEND_API_KEY</code> and <code>RESEND_FROM_EMAIL</code> to send confirmation
-          and update emails.
+          Set <code>SMTP_HOST</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code>, and{" "}
+          <code>FROM_EMAIL</code> (Google App Password) to send confirmation and update emails.
         </Alert>
       ) : null}
 

@@ -21,6 +21,6 @@ export function isValidEmail(value) {
 }
 
 export function siteBaseUrl() {
-  const base = process.env.NEXT_PUBLIC_BASE_URL || "https://sunrisesemester.com";
+  const base = process.env.NEXT_PUBLIC_BASE_URL || "https://www.sunrisesemester.com";
   return base.replace(/\/$/, "");
 }
