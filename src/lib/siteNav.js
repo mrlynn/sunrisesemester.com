@@ -17,6 +17,7 @@ export const SITE_NAV_MORE = [
   { href: "/business-meetings", label: "Group service" },
   { href: "/servant-roles", label: "Servant roles" },
   { href: "/share-your-story", label: "Share your story" },
+  { href: "/safety", label: "Safety" },
   { href: "/report", label: "Report a concern" },
 ];
 
@@ -40,6 +41,7 @@ export const SITE_NAV_GROUPS = [
       { href: "/reflections", label: "Reflections" },
       { href: "/literature", label: "Literature" },
       { href: "/resources", label: "Resources" },
+      { href: "/safety", label: "Safety" },
     ],
   },
   {
