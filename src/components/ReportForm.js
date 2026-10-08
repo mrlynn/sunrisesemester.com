@@ -20,6 +20,11 @@ export default function ReportForm() {
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState("");
   const [success, setSuccess] = React.useState(false);
+  const startedAtRef = React.useRef(0);
+
+  React.useEffect(() => {
+    startedAtRef.current = Date.now();
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -34,6 +39,8 @@ export default function ReportForm() {
         body: String(form.get("body") ?? "").trim(),
         contactEmail: String(form.get("contactEmail") ?? "").trim(),
         contactPhone: String(form.get("contactPhone") ?? "").trim(),
+        website: String(form.get("website") ?? "").trim(),
+        startedAt: startedAtRef.current,
       };
 
       const res = await fetch("/api/reports", {
@@ -151,6 +158,17 @@ export default function ReportForm() {
             autoComplete="tel"
             inputProps={{ maxLength: 40 }}
           />
+
+          {/* Honeypot: hidden from people, filled in by bots. */}
+          <Box
+            aria-hidden="true"
+            sx={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}
+          >
+            <label>
+              Website
+              <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+            </label>
+          </Box>
 
           <Button
             type="submit"

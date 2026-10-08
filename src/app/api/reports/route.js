@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Report from "@/models/Report";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
-import { parseReportInput } from "@/lib/reports";
+import { parseReportInput, reportSpamReason } from "@/lib/reports";
 import { isEmailConfigured, sendReportNotificationEmail } from "@/lib/email";
 
 export async function POST(request) {
@@ -20,6 +20,15 @@ export async function POST(request) {
     }
 
     const body = await request.json();
+    const userAgent = String(request.headers.get("user-agent") || "").slice(0, 500);
+
+    // Pretend success so bots get no signal to adapt to.
+    const spamReason = reportSpamReason(body, { userAgent });
+    if (spamReason) {
+      console.warn(`Dropped spam report (${spamReason}) from ${ip}`);
+      return NextResponse.json({ ok: true });
+    }
+
     const parsed = parseReportInput(body);
     if (!parsed.ok) {
       return NextResponse.json({ error: parsed.error }, { status: parsed.status });
@@ -29,7 +38,7 @@ export async function POST(request) {
     const report = await Report.create({
       ...parsed.value,
       ip,
-      userAgent: String(request.headers.get("user-agent") || "").slice(0, 500),
+      userAgent,
       status: "new",
     });
 
