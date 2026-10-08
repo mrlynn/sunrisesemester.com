@@ -56,6 +56,39 @@ export function parseReportInput(body) {
   };
 }
 
+const MIN_FILL_MS = 3000;
+
+// Random mixed-case token with no spaces, e.g. "dnUoykQJEbVijidFrW".
+function looksLikeGibberish(value) {
+  return /^[A-Za-z]{8,}$/.test(value) && (value.slice(1).match(/[A-Z]/g) || []).length >= 2;
+}
+
+/**
+ * Returns a short reason string when a submission is almost certainly a bot, otherwise null.
+ * Signals are deliberately narrow so a real report is never discarded.
+ * @param {unknown} body - raw request body
+ * @param {{ userAgent?: string, now?: number }} [context]
+ */
+export function reportSpamReason(body, { userAgent = "", now = Date.now() } = {}) {
+  const input = body && typeof body === "object" ? body : {};
+
+  if (String(input.website ?? "").trim()) return "honeypot";
+
+  // Scripted clients have been sending a user-agent wrapped in literal quotes.
+  if (userAgent.startsWith('"')) return "quoted-user-agent";
+
+  const startedAt = Number(input.startedAt);
+  if (Number.isFinite(startedAt) && startedAt > 0 && now - startedAt < MIN_FILL_MS) {
+    return "too-fast";
+  }
+
+  const subject = String(input.subject ?? "").trim();
+  const details = String(input.body ?? "").trim();
+  if (looksLikeGibberish(subject) && looksLikeGibberish(details)) return "gibberish";
+
+  return null;
+}
+
 export function parseAdminReportPatch(body) {
   const input = body && typeof body === "object" ? body : {};
   const patch = {};
